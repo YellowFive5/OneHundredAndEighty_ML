@@ -18,6 +18,19 @@ That's why I want to try ML. The idea is to have 1 camera with general dartboard
 
 I had some consultations with men who use ML on in his work and knows many about - he said it's smart idea and I must succeed with it.
 
-So, first of all, I need to collect dataset...
+So let's go...
+
+## 1. Some pre-calculations
+![Mapping](https://user-images.githubusercontent.com/42347722/114311826-fc46d700-9af8-11eb-926e-806838f7d4d0.jpg)
+
+This simplyfied map shows how many throws can be done. This is simple-minimum. On all this throws I need minimum one diff image to learn. From this calculations becomes clear, that it's a lot work ahead... too lot.
+
+So, it will be right to start small. I'll try to prepare minimum dataset for 25 and bulls to learn.
+
+## 2. Only one camera
+![IMG_2443](https://user-images.githubusercontent.com/42347722/114311813-f0f3ab80-9af8-11eb-99e9-6eacbfecab15.jpeg)
+
+Camera case and mount printed and set.
 
 ...to be continued...
+
