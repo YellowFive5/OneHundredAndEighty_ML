@@ -46,3 +46,5 @@ Further calculation process will use synthetic 1300x1300 px drawed dartboard ima
 21 bull point and 108 _25 points
 
 ...to be continued...
+
+P.S. - If you like this stuff and if you want you can donate me for some beer 🍻 (click 💜"Sponsor" button in the top of a page)
