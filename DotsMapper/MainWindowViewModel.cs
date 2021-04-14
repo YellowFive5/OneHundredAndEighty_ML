@@ -92,7 +92,7 @@ namespace DotsMapper
             //  Draw POI dots
             foreach (var dot in GetDots())
             {
-                DrawCircle(ProjectionBackgroundImage, dot, 2, new MCvScalar(new Random().Next(50, 254), new Random().Next(50, 254), new Random().Next(50, 254)), 3);
+                DrawCircle(ProjectionBackgroundImage, dot, 2, new MCvScalar(new Random().Next(50, 254), new Random().Next(50, 254), new Random().Next(50, 254)), 4);
             }
 
             DartboardImage = EmguImageToBitmapImage(ProjectionBackgroundImage);
@@ -101,38 +101,33 @@ namespace DotsMapper
         private IEnumerable<PointF> GetDots()
         {
             var dots = new Collection<PointF>();
-            var betweenRowPX = 8;
+            var betweenRowPX = 10;
             var betweenRowSemiPX = betweenRowPX / 2;
 
             dots.Add(projectionCenterPoint);
 
             #region Bull
 
-            for (int i = 1; i < 3; i++) // bull / center / down
+            for (int i = 1; i < 2; i++) // bull / center / down
             {
                 dots.Add(new PointF(projectionCenterPoint.X, projectionCenterPoint.Y + i * betweenRowPX));
             }
 
-            for (int i = 1; i < 3; i++) // bull / center / up
+            for (int i = 1; i < 2; i++) // bull / center / up
             {
                 dots.Add(new PointF(projectionCenterPoint.X, projectionCenterPoint.Y - i * betweenRowPX));
             }
 
-            var topYDotBull = dots.OrderBy(d => d.Y).First();
+            var topYDotBull = new PointF(projectionCenterPoint.X, projectionCenterPoint.Y - 2 * betweenRowPX);
 
-            for (int i = 1; i < 4; i++) // bull / row 1,9
-            {
-                dots.Add(new PointF(topYDotBull.X - betweenRowPX * 2, topYDotBull.Y + i * betweenRowPX));
-                dots.Add(new PointF(topYDotBull.X + betweenRowPX * 2, topYDotBull.Y + i * betweenRowPX));
-            }
 
-            for (int i = 0; i < 4; i++) // bull / row 2,8
+            for (int i = 1; i < 3; i++) // bull / row 2,8
             {
                 dots.Add(new PointF(topYDotBull.X - betweenRowSemiPX * 5 + betweenRowPX, topYDotBull.Y + betweenRowSemiPX + i * betweenRowPX));
                 dots.Add(new PointF(topYDotBull.X + betweenRowSemiPX * 5 - betweenRowPX, topYDotBull.Y + betweenRowSemiPX + i * betweenRowPX));
             }
 
-            for (int i = 0; i < 5; i++) // bull / row 3,7
+            for (int i = 1; i < 4; i++) // bull / row 3,7
             {
                 dots.Add(new PointF(topYDotBull.X - betweenRowSemiPX * 2, topYDotBull.Y + i * betweenRowPX));
                 dots.Add(new PointF(topYDotBull.X + betweenRowSemiPX * 2, topYDotBull.Y + i * betweenRowPX));
@@ -148,74 +143,51 @@ namespace DotsMapper
 
             #region _25
 
-            for (int i = 1; i < 5; i++) // 25 / center / down
+            for (int i = 1; i < 3; i++) // 25 / center / down
             {
                 dots.Add(new PointF(projectionCenterPoint.X, projectionCenterPoint.Y + betweenRowPX * 2 + i * betweenRowPX));
             }
 
-            for (int i = 1; i < 5; i++) // 25 / center / up
+            for (int i = 1; i < 3; i++) // 25 / center / up
             {
                 dots.Add(new PointF(projectionCenterPoint.X, projectionCenterPoint.Y - betweenRowPX * 2 - i * betweenRowPX));
             }
 
-            var topYDot_25 = dots.OrderBy(d => d.Y).First();
+            var topYDot_25 = new PointF(projectionCenterPoint.X, projectionCenterPoint.Y - 5 * betweenRowPX);
 
-            for (int i = 5; i < 8; i++) // 25 / row 1,25
-            {
-                dots.Add(new PointF(topYDot_25.X - betweenRowPX * 6, topYDot_25.Y + i * betweenRowPX));
-                dots.Add(new PointF(topYDot_25.X + betweenRowPX * 6, topYDot_25.Y + i * betweenRowPX));
-            }
-
-            for (int i = 4; i < 10; i++) // 25 / row 2,24
-            {
-                dots.Add(new PointF(topYDot_25.X - betweenRowPX * 5 - betweenRowSemiPX, topYDot_25.Y - betweenRowSemiPX + i * betweenRowPX));
-                dots.Add(new PointF(topYDot_25.X + betweenRowPX * 5 + betweenRowSemiPX, topYDot_25.Y - betweenRowSemiPX + i * betweenRowPX));
-            }
-
-            for (int i = 3; i < 10; i++) // 25 / row 3,23
-            {
-                dots.Add(new PointF(topYDot_25.X - betweenRowPX * 5, topYDot_25.Y + i * betweenRowPX));
-                dots.Add(new PointF(topYDot_25.X + betweenRowPX * 5, topYDot_25.Y + i * betweenRowPX));
-            }
-
-            for (int i = 3; i < 11; i++) // 25 / row 4,22
+            for (int i = 4; i < 8; i++) // 25 / row 1,25
             {
                 dots.Add(new PointF(topYDot_25.X - betweenRowPX * 4 - betweenRowSemiPX, topYDot_25.Y - betweenRowSemiPX + i * betweenRowPX));
                 dots.Add(new PointF(topYDot_25.X + betweenRowPX * 4 + betweenRowSemiPX, topYDot_25.Y - betweenRowSemiPX + i * betweenRowPX));
             }
 
-            for (int i = 2; i < 11; i++) // 25 / row 5,21
+            for (int i = 3; i < 8; i++) // 25 / row 2,24
             {
                 dots.Add(new PointF(topYDot_25.X - betweenRowPX * 4, topYDot_25.Y + i * betweenRowPX));
                 dots.Add(new PointF(topYDot_25.X + betweenRowPX * 4, topYDot_25.Y + i * betweenRowPX));
             }
 
-            for (int i = 2; i < 12; i++) // 25 / row 6,20
+            for (int i = 3; i < 9; i++) // 25 / row 3,23
             {
                 dots.Add(new PointF(topYDot_25.X - betweenRowPX * 3 - betweenRowSemiPX, topYDot_25.Y - betweenRowSemiPX + i * betweenRowPX));
                 dots.Add(new PointF(topYDot_25.X + betweenRowPX * 3 + betweenRowSemiPX, topYDot_25.Y - betweenRowSemiPX + i * betweenRowPX));
             }
 
-            for (int i = 1; i < 12; i++) // 25 / row 7,19
+            for (int i = 2; i < 9; i++) // 25 / row 4,22
             {
                 dots.Add(new PointF(topYDot_25.X - betweenRowPX * 3, topYDot_25.Y + i * betweenRowPX));
                 dots.Add(new PointF(topYDot_25.X + betweenRowPX * 3, topYDot_25.Y + i * betweenRowPX));
             }
 
-            for (int i = 1; i < 13; i++) // 25 / row 8,18
+            for (int i = 2; i < 10; i++) // 25 / row 5,21
             {
-                if (i is > 4 and <= 8)
-                {
-                    continue;
-                }
-
                 dots.Add(new PointF(topYDot_25.X - betweenRowPX * 2 - betweenRowSemiPX, topYDot_25.Y - betweenRowSemiPX + i * betweenRowPX));
                 dots.Add(new PointF(topYDot_25.X + betweenRowPX * 2 + betweenRowSemiPX, topYDot_25.Y - betweenRowSemiPX + i * betweenRowPX));
             }
 
-            for (int i = 1; i < 12; i++) // 25 / row 9,17
+            for (int i = 1; i < 10; i++) // 25 / row 6,20
             {
-                if (i is > 3 and <= 8)
+                if (i is > 3 and <= 6)
                 {
                     continue;
                 }
@@ -224,9 +196,9 @@ namespace DotsMapper
                 dots.Add(new PointF(topYDot_25.X + betweenRowPX * 2, topYDot_25.Y + i * betweenRowPX));
             }
 
-            for (int i = 1; i < 13; i++) // 25 / row 10,16
+            for (int i = 1; i < 11; i++) // 25 / row 7,19
             {
-                if (i is > 3 and <= 9)
+                if (i is > 3 and <= 7)
                 {
                     continue;
                 }
@@ -235,9 +207,9 @@ namespace DotsMapper
                 dots.Add(new PointF(topYDot_25.X + betweenRowPX + betweenRowSemiPX, topYDot_25.Y - betweenRowSemiPX + i * betweenRowPX));
             }
 
-            for (int i = 1; i < 12; i++) // 25 / row 11,15
+            for (int i = 1; i < 10; i++) // 25 / row 8,18
             {
-                if (i is > 3 and <= 8)
+                if (i is > 2 and <= 7)
                 {
                     continue;
                 }
@@ -246,9 +218,9 @@ namespace DotsMapper
                 dots.Add(new PointF(topYDot_25.X + betweenRowPX, topYDot_25.Y + i * betweenRowPX));
             }
 
-            for (int i = 1; i < 13; i++) // 25 / row 12,14
+            for (int i = 1; i < 11; i++) // 25 / row 9,17
             {
-                if (i is > 3 and <= 9)
+                if (i is > 3 and <= 7)
                 {
                     continue;
                 }
@@ -259,7 +231,6 @@ namespace DotsMapper
 
             #endregion
 
-            var d = dots.Distinct().ToList();
             return dots.Distinct();
         }
 
