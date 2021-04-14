@@ -118,51 +118,149 @@ namespace DotsMapper
                 dots.Add(new PointF(projectionCenterPoint.X, projectionCenterPoint.Y - i * betweenRowPX));
             }
 
-            var topYdot = dots.OrderBy(d => d.Y).First();
+            var topYDotBull = dots.OrderBy(d => d.Y).First();
 
-            for (int i = 1; i < 4; i++) // bull / row 1
+            for (int i = 1; i < 4; i++) // bull / row 1,9
             {
-                dots.Add(new PointF(topYdot.X - betweenRowPX * 2, topYdot.Y + i * betweenRowPX - 1));
-            }
-
-            for (int i = 0; i < 4; i++) // bull / row 2
-            {
-                dots.Add(new PointF(topYdot.X - betweenRowSemiPX * 5 + betweenRowPX, topYdot.Y + betweenRowSemiPX + i * betweenRowPX));
+                dots.Add(new PointF(topYDotBull.X - betweenRowPX * 2, topYDotBull.Y + i * betweenRowPX));
+                dots.Add(new PointF(topYDotBull.X + betweenRowPX * 2, topYDotBull.Y + i * betweenRowPX));
             }
 
-            for (int i = 0; i < 5; i++) // bull / row 3
+            for (int i = 0; i < 4; i++) // bull / row 2,8
             {
-                dots.Add(new PointF(topYdot.X - betweenRowSemiPX * 2, topYdot.Y + i * betweenRowPX - 1));
+                dots.Add(new PointF(topYDotBull.X - betweenRowSemiPX * 5 + betweenRowPX, topYDotBull.Y + betweenRowSemiPX + i * betweenRowPX));
+                dots.Add(new PointF(topYDotBull.X + betweenRowSemiPX * 5 - betweenRowPX, topYDotBull.Y + betweenRowSemiPX + i * betweenRowPX));
             }
-            
-            for (int i = 0; i < 4; i++) // bull / row 4
+
+            for (int i = 0; i < 5; i++) // bull / row 3,7
             {
-                dots.Add(new PointF(topYdot.X - betweenRowSemiPX * 3 + betweenRowPX, topYdot.Y + betweenRowSemiPX + i * betweenRowPX));
+                dots.Add(new PointF(topYDotBull.X - betweenRowSemiPX * 2, topYDotBull.Y + i * betweenRowPX));
+                dots.Add(new PointF(topYDotBull.X + betweenRowSemiPX * 2, topYDotBull.Y + i * betweenRowPX));
             }
-            
-            for (int i = 0; i < 4; i++) // bull / row 6
+
+            for (int i = 0; i < 4; i++) // bull / row 4,6
             {
-                dots.Add(new PointF(topYdot.X + betweenRowSemiPX, topYdot.Y + betweenRowSemiPX + i * betweenRowPX));
-            }
-            
-            for (int i = 0; i < 5; i++) // bull / row 7
-            {
-                dots.Add(new PointF(topYdot.X + betweenRowSemiPX * 2, topYdot.Y + i * betweenRowPX - 1));
-            }
-            
-            for (int i = 0; i < 4; i++) // bull / row 8
-            {
-                dots.Add(new PointF(topYdot.X + betweenRowSemiPX * 3, topYdot.Y + betweenRowSemiPX + i * betweenRowPX));
-            }
-            
-            for (int i = 1; i < 4; i++) // bull / row 1
-            {
-                dots.Add(new PointF(topYdot.X + betweenRowPX * 2, topYdot.Y + i * betweenRowPX - 1));
+                dots.Add(new PointF(topYDotBull.X - betweenRowSemiPX * 3 + betweenRowPX, topYDotBull.Y + betweenRowSemiPX + i * betweenRowPX));
+                dots.Add(new PointF(topYDotBull.X + betweenRowSemiPX * 3 - betweenRowPX, topYDotBull.Y + betweenRowSemiPX + i * betweenRowPX));
             }
 
             #endregion
 
-            return dots;
+            #region _25
+
+            for (int i = 1; i < 5; i++) // 25 / center / down
+            {
+                dots.Add(new PointF(projectionCenterPoint.X, projectionCenterPoint.Y + betweenRowPX * 2 + i * betweenRowPX));
+            }
+
+            for (int i = 1; i < 5; i++) // 25 / center / up
+            {
+                dots.Add(new PointF(projectionCenterPoint.X, projectionCenterPoint.Y - betweenRowPX * 2 - i * betweenRowPX));
+            }
+
+            var topYDot_25 = dots.OrderBy(d => d.Y).First();
+
+            for (int i = 5; i < 8; i++) // 25 / row 1,25
+            {
+                dots.Add(new PointF(topYDot_25.X - betweenRowPX * 6, topYDot_25.Y + i * betweenRowPX));
+                dots.Add(new PointF(topYDot_25.X + betweenRowPX * 6, topYDot_25.Y + i * betweenRowPX));
+            }
+
+            for (int i = 4; i < 10; i++) // 25 / row 2,24
+            {
+                dots.Add(new PointF(topYDot_25.X - betweenRowPX * 5 - betweenRowSemiPX, topYDot_25.Y - betweenRowSemiPX + i * betweenRowPX));
+                dots.Add(new PointF(topYDot_25.X + betweenRowPX * 5 + betweenRowSemiPX, topYDot_25.Y - betweenRowSemiPX + i * betweenRowPX));
+            }
+
+            for (int i = 3; i < 10; i++) // 25 / row 3,23
+            {
+                dots.Add(new PointF(topYDot_25.X - betweenRowPX * 5, topYDot_25.Y + i * betweenRowPX));
+                dots.Add(new PointF(topYDot_25.X + betweenRowPX * 5, topYDot_25.Y + i * betweenRowPX));
+            }
+
+            for (int i = 3; i < 11; i++) // 25 / row 4,22
+            {
+                dots.Add(new PointF(topYDot_25.X - betweenRowPX * 4 - betweenRowSemiPX, topYDot_25.Y - betweenRowSemiPX + i * betweenRowPX));
+                dots.Add(new PointF(topYDot_25.X + betweenRowPX * 4 + betweenRowSemiPX, topYDot_25.Y - betweenRowSemiPX + i * betweenRowPX));
+            }
+
+            for (int i = 2; i < 11; i++) // 25 / row 5,21
+            {
+                dots.Add(new PointF(topYDot_25.X - betweenRowPX * 4, topYDot_25.Y + i * betweenRowPX));
+                dots.Add(new PointF(topYDot_25.X + betweenRowPX * 4, topYDot_25.Y + i * betweenRowPX));
+            }
+
+            for (int i = 2; i < 12; i++) // 25 / row 6,20
+            {
+                dots.Add(new PointF(topYDot_25.X - betweenRowPX * 3 - betweenRowSemiPX, topYDot_25.Y - betweenRowSemiPX + i * betweenRowPX));
+                dots.Add(new PointF(topYDot_25.X + betweenRowPX * 3 + betweenRowSemiPX, topYDot_25.Y - betweenRowSemiPX + i * betweenRowPX));
+            }
+
+            for (int i = 1; i < 12; i++) // 25 / row 7,19
+            {
+                dots.Add(new PointF(topYDot_25.X - betweenRowPX * 3, topYDot_25.Y + i * betweenRowPX));
+                dots.Add(new PointF(topYDot_25.X + betweenRowPX * 3, topYDot_25.Y + i * betweenRowPX));
+            }
+
+            for (int i = 1; i < 13; i++) // 25 / row 8,18
+            {
+                if (i is > 4 and <= 8)
+                {
+                    continue;
+                }
+
+                dots.Add(new PointF(topYDot_25.X - betweenRowPX * 2 - betweenRowSemiPX, topYDot_25.Y - betweenRowSemiPX + i * betweenRowPX));
+                dots.Add(new PointF(topYDot_25.X + betweenRowPX * 2 + betweenRowSemiPX, topYDot_25.Y - betweenRowSemiPX + i * betweenRowPX));
+            }
+
+            for (int i = 1; i < 12; i++) // 25 / row 9,17
+            {
+                if (i is > 3 and <= 8)
+                {
+                    continue;
+                }
+
+                dots.Add(new PointF(topYDot_25.X - betweenRowPX * 2, topYDot_25.Y + i * betweenRowPX));
+                dots.Add(new PointF(topYDot_25.X + betweenRowPX * 2, topYDot_25.Y + i * betweenRowPX));
+            }
+
+            for (int i = 1; i < 13; i++) // 25 / row 10,16
+            {
+                if (i is > 3 and <= 9)
+                {
+                    continue;
+                }
+
+                dots.Add(new PointF(topYDot_25.X - betweenRowPX - betweenRowSemiPX, topYDot_25.Y - betweenRowSemiPX + i * betweenRowPX));
+                dots.Add(new PointF(topYDot_25.X + betweenRowPX + betweenRowSemiPX, topYDot_25.Y - betweenRowSemiPX + i * betweenRowPX));
+            }
+
+            for (int i = 1; i < 12; i++) // 25 / row 11,15
+            {
+                if (i is > 3 and <= 8)
+                {
+                    continue;
+                }
+
+                dots.Add(new PointF(topYDot_25.X - betweenRowPX, topYDot_25.Y + i * betweenRowPX));
+                dots.Add(new PointF(topYDot_25.X + betweenRowPX, topYDot_25.Y + i * betweenRowPX));
+            }
+
+            for (int i = 1; i < 13; i++) // 25 / row 12,14
+            {
+                if (i is > 3 and <= 9)
+                {
+                    continue;
+                }
+
+                dots.Add(new PointF(topYDot_25.X - betweenRowSemiPX, topYDot_25.Y - betweenRowSemiPX + i * betweenRowPX));
+                dots.Add(new PointF(topYDot_25.X + betweenRowSemiPX, topYDot_25.Y - betweenRowSemiPX + i * betweenRowPX));
+            }
+
+            #endregion
+
+            var d = dots.Distinct().ToList();
+            return dots.Distinct();
         }
 
         private BitmapImage EmguImageToBitmapImage(Image<Bgr, byte> image)
