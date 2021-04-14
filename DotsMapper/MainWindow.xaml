@@ -6,22 +6,22 @@
         xmlns:local="clr-namespace:DotsMapper"
         mc:Ignorable="d"
         Title="DotsMapper"
-        Height="1340"
-        Width="1340"
+        Height="1400"
+        Width="1400"
         ResizeMode="NoResize">
     <Window.DataContext>
         <local:MainWindowViewModel />
     </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="10" />
+            <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="10" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="10" />
+            <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="10" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
         <Image Name="DartboardImageBox"

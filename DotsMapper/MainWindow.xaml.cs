@@ -11,7 +11,7 @@ namespace DotsMapper
             InitializeComponent();
             var viewModel = new MainWindowViewModel();
             DataContext = viewModel;
-            viewModel.ProjectionPrepare();
+            viewModel.DrawProjection();
         }
     }
 }

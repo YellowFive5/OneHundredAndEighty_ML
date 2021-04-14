@@ -2,10 +2,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Media.Imaging;
 using Emgu.CV;
@@ -33,7 +35,8 @@ namespace DotsMapper
         private const int ProjectionFrameSide = 1300;
         private const int ProjectionCoefficient = 3;
         private readonly MCvScalar projectionGridColor = new Bgr(Color.DarkGray).MCvScalar;
-        private readonly Bgr projectionDigitsColor = new Bgr(Color.White);
+        private readonly Bgr projectionDigitsColor = new(Color.White);
+        private readonly MCvScalar poiDotColor = new Bgr(Color.BlueViolet).MCvScalar;
         private const int ProjectionGridThickness = 2;
         private const double SectorStepRad = 0.314159;
         private const double SemiSectorStepRad = SectorStepRad / 2;
@@ -41,12 +44,12 @@ namespace DotsMapper
         private const double ProjectionDigitsScale = 2;
         private const int ProjectionDigitsThickness = 2;
 
-        public void ProjectionPrepare()
+        private static readonly PointF projectionCenterPoint = new((float) ProjectionFrameSide / 2,
+                                                                   (float) ProjectionFrameSide / 2);
+
+        public void DrawProjection()
         {
             ProjectionBackgroundImage = new Image<Bgr, byte>(ProjectionFrameSide, ProjectionFrameSide);
-
-            var projectionCenterPoint = new PointF((float) ProjectionBackgroundImage.Width / 2,
-                                                   (float) ProjectionBackgroundImage.Height / 2);
 
             // Draw dartboard projection
             DrawCircle(ProjectionBackgroundImage, projectionCenterPoint, ProjectionCoefficient * 7, projectionGridColor, ProjectionGridThickness);
@@ -86,7 +89,80 @@ namespace DotsMapper
                 radSector += SectorStepRad;
             }
 
+            //  Draw POI dots
+            foreach (var dot in GetDots())
+            {
+                DrawCircle(ProjectionBackgroundImage, dot, 2, new MCvScalar(new Random().Next(50, 254), new Random().Next(50, 254), new Random().Next(50, 254)), 3);
+            }
+
             DartboardImage = EmguImageToBitmapImage(ProjectionBackgroundImage);
+        }
+
+        private IEnumerable<PointF> GetDots()
+        {
+            var dots = new Collection<PointF>();
+            var betweenRowPX = 8;
+            var betweenRowSemiPX = betweenRowPX / 2;
+
+            dots.Add(projectionCenterPoint);
+
+            #region Bull
+
+            for (int i = 1; i < 3; i++) // bull / center / down
+            {
+                dots.Add(new PointF(projectionCenterPoint.X, projectionCenterPoint.Y + i * betweenRowPX));
+            }
+
+            for (int i = 1; i < 3; i++) // bull / center / up
+            {
+                dots.Add(new PointF(projectionCenterPoint.X, projectionCenterPoint.Y - i * betweenRowPX));
+            }
+
+            var topYdot = dots.OrderBy(d => d.Y).First();
+
+            for (int i = 1; i < 4; i++) // bull / row 1
+            {
+                dots.Add(new PointF(topYdot.X - betweenRowPX * 2, topYdot.Y + i * betweenRowPX - 1));
+            }
+
+            for (int i = 0; i < 4; i++) // bull / row 2
+            {
+                dots.Add(new PointF(topYdot.X - betweenRowSemiPX * 5 + betweenRowPX, topYdot.Y + betweenRowSemiPX + i * betweenRowPX));
+            }
+
+            for (int i = 0; i < 5; i++) // bull / row 3
+            {
+                dots.Add(new PointF(topYdot.X - betweenRowSemiPX * 2, topYdot.Y + i * betweenRowPX - 1));
+            }
+            
+            for (int i = 0; i < 4; i++) // bull / row 4
+            {
+                dots.Add(new PointF(topYdot.X - betweenRowSemiPX * 3 + betweenRowPX, topYdot.Y + betweenRowSemiPX + i * betweenRowPX));
+            }
+            
+            for (int i = 0; i < 4; i++) // bull / row 6
+            {
+                dots.Add(new PointF(topYdot.X + betweenRowSemiPX, topYdot.Y + betweenRowSemiPX + i * betweenRowPX));
+            }
+            
+            for (int i = 0; i < 5; i++) // bull / row 7
+            {
+                dots.Add(new PointF(topYdot.X + betweenRowSemiPX * 2, topYdot.Y + i * betweenRowPX - 1));
+            }
+            
+            for (int i = 0; i < 4; i++) // bull / row 8
+            {
+                dots.Add(new PointF(topYdot.X + betweenRowSemiPX * 3, topYdot.Y + betweenRowSemiPX + i * betweenRowPX));
+            }
+            
+            for (int i = 1; i < 4; i++) // bull / row 1
+            {
+                dots.Add(new PointF(topYdot.X + betweenRowPX * 2, topYdot.Y + i * betweenRowPX - 1));
+            }
+
+            #endregion
+
+            return dots;
         }
 
         private BitmapImage EmguImageToBitmapImage(Image<Bgr, byte> image)
