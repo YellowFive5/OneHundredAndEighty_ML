@@ -5,6 +5,51 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DiffImagesCollector"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid />
+        Title="DiffImagesCollector"
+        Height="1200"
+        Width="2000"
+        ResizeMode="NoResize">
+    <Window.DataContext>
+        <local:MainWindowViewModel />
+    </Window.DataContext>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="10" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="10" />
+            <RowDefinition Height="50" />
+            <RowDefinition Height="10" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="10" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="10" />
+        </Grid.ColumnDefinitions>
+        <Image Grid.Row="1"
+               Grid.Column="1"
+               Source="{Binding BackgroundBitmap}" />
+        <Image Grid.Row="1"
+               Grid.Column="3"
+               Source="{Binding ThrowBitmap}" />
+        <Image Grid.Row="3"
+               Grid.Column="1"
+               Source="{Binding ThrowProcessedBitmap}" />
+        <Image Grid.Row="3"
+               Grid.Column="3"
+               Source="{Binding DiffBitmap}" />
+        <Button
+            Grid.Row="5"
+            Grid.Column="1"
+            Content="Capture"
+            Click="CaptureButton_OnClick" />
+        <Button
+            Grid.Row="5"
+            Grid.Column="3"
+            Content="Clear"
+            Click="ClearButton_OnClick" />
+    </Grid>
 </Window>
