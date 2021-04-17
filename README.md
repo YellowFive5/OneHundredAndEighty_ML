@@ -1,3 +1,9 @@
+## Contents
+* [0. Why and what](https://github.com/YellowFive5/OneHundredAndEighty_ML#why)
+* [1. Some pre-calculations](https://github.com/YellowFive5/OneHundredAndEighty_ML#1-some-pre-calculations)
+* [2. Only one camera](https://github.com/YellowFive5/OneHundredAndEighty_ML#2-only-one-camera)
+* [3. DotsMapper](https://github.com/YellowFive5/OneHundredAndEighty_ML#3-dotsmapper)
+
 # OneHundredAndEighty_ML
 
 Detection, based on machine learning
@@ -32,5 +38,13 @@ So, it will be right to start small. I'll try to prepare minimum dataset for 25 
 
 Camera case and mount printed and set.
 
+## 3. DotsMapper
+Further calculation process will use synthetic 1300x1300 px drawed dartboard image and POI's with it's coordinates. To collect this coordinates for learning and mapping to diff-image for NN I use [DotsMapper](https://github.com/YellowFive5/OneHundredAndEighty_ML/tree/main/DotsMapper) And that how it goes:
+
+![2021-04-14 16_05_20-DotsMapper](https://user-images.githubusercontent.com/42347722/114715164-749cda80-9d3b-11eb-8573-dd5fb24479d8.png)
+
+21 bull point and 108 _25 points
+
 ...to be continued...
 
+P.S. - If you like this stuff and if you want you can donate me for some beer 🍻 (click 💜"Sponsor" button in the top of a page)
