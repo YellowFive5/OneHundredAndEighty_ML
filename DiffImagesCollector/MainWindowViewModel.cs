@@ -227,8 +227,9 @@ namespace DiffImagesCollector
 
             var query = "SELECT [Dots].Id, X, Y, Result FROM [Dots] " +
                         "LEFT JOIN [Images] " +
-                        "ON [Images].[DotId] = [Dots].[Id]" +
-                        "WHERE [Images].[Id] IS NULL " +
+                        "ON [Images].[DotId] = [Dots].[Id] " +
+                        "GROUP BY [Images].[DotId] " +
+                        "HAVING COUNT([Images].[DotId]) <= 3 " +
                         "LIMIT 1";
 
             var cmd = new SQLiteCommand(query) {Connection = connection};
