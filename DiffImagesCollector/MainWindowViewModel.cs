@@ -3,6 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
+using System.Data.SQLite;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -104,6 +106,7 @@ namespace DiffImagesCollector
         private const double StartRadSector_11 = -3.14159;
         private const double ProjectionDigitsScale = 2;
         private const int ProjectionDigitsThickness = 2;
+        private const float DeNoiseCoefficient = 25.0f;
 
         private static readonly PointF projectionCenterPoint = new((float) ProjectionFrameSide / 2,
                                                                    (float) ProjectionFrameSide / 2);
@@ -169,12 +172,11 @@ namespace DiffImagesCollector
             var videoCapture = new VideoCapture(0, VideoCapture.API.DShow);
             videoCapture.SetCaptureProperty(CapProp.FrameWidth, 1280);
             videoCapture.SetCaptureProperty(CapProp.FrameHeight, 720);
-            // videoCapture.SetCaptureProperty(CapProp.FrameWidth, 1920);
-            // videoCapture.SetCaptureProperty(CapProp.FrameHeight, 1080);
             backgroundRawImage = videoCapture.QueryFrame()
                                              .ToImage<Bgr, byte>();
 
             backgroundProcessedImage = backgroundRawImage.Clone().Convert<Gray, byte>();
+            CvInvoke.FastNlMeansDenoising(backgroundProcessedImage, backgroundProcessedImage, DeNoiseCoefficient);
 
             BackgroundBitmap = ImageToBitmapImage(backgroundRawImage);
 
@@ -194,8 +196,6 @@ namespace DiffImagesCollector
             var videoCapture = new VideoCapture(0, VideoCapture.API.DShow);
             videoCapture.SetCaptureProperty(CapProp.FrameWidth, 1280);
             videoCapture.SetCaptureProperty(CapProp.FrameHeight, 720);
-            // videoCapture.SetCaptureProperty(CapProp.FrameWidth, 1920);
-            // videoCapture.SetCaptureProperty(CapProp.FrameHeight, 1080);
             throwRawImage = videoCapture.QueryFrame()
                                         .ToImage<Bgr, byte>();
 
@@ -205,6 +205,7 @@ namespace DiffImagesCollector
             ThrowBitmap = ImageToBitmapImage(throwRawImage);
 
             throwProcessedImage = throwRawImage.Clone().Convert<Gray, byte>();
+            CvInvoke.FastNlMeansDenoising(throwProcessedImage, throwProcessedImage, DeNoiseCoefficient);
             ThrowProcessedBitmap = ImageToBitmapImage(throwProcessedImage);
 
             diffImage = throwProcessedImage.AbsDiff(backgroundProcessedImage);
@@ -213,6 +214,83 @@ namespace DiffImagesCollector
             backgroundProcessedImage = throwProcessedImage.Clone();
 
             videoCapture.Dispose();
+
+            CollectImage();
+            ShowNextPointToStick();
+        }
+
+        private Tuple<long, PointF, string> processingPoint;
+
+        public void ShowNextPointToStick()
+        {
+            var connection = new SQLiteConnection("Data Source=Dots.db; Pooling=true;");
+
+            var query = "SELECT [Dots].Id, X, Y, Result FROM [Dots] " +
+                        "LEFT JOIN [Images] " +
+                        "ON [Images].[DotId] = [Dots].[Id]" +
+                        "WHERE [Images].[Id] IS NULL " +
+                        "LIMIT 1";
+
+            var cmd = new SQLiteCommand(query) {Connection = connection};
+
+            var table = new DataTable();
+            connection.Open();
+            using (var dataReader = cmd.ExecuteReader())
+            {
+                using (var dataSet = new DataSet())
+                {
+                    dataSet.Tables.Add(table);
+                    dataSet.EnforceConstraints = false;
+                    table.Load(dataReader);
+                    dataReader.Close();
+                }
+            }
+
+            connection.Close();
+
+            if (table.Rows.Count == 0)
+            {
+                return;
+            }
+
+            processingPoint = new Tuple<long, PointF, string>((long) table.Rows[0][0],
+                                                              new PointF((long) table.Rows[0][1],
+                                                                         (long) table.Rows[0][2]),
+                                                              table.Rows[0][3].ToString());
+
+            var projectionImageWithDot = projectionBackgroundImage.Clone();
+            DrawCircle(projectionImageWithDot, processingPoint.Item2, 2, poiDotColor, 4);
+
+            ProjectionBitmap = ImageToBitmapImage(projectionImageWithDot);
+        }
+
+        private void CollectImage()
+        {
+            var bitmap = new Bitmap(DiffBitmap.StreamSource);
+            Directory.CreateDirectory("Images");
+            bitmap.Save("./Images/" +
+                        $"{processingPoint.Item3}_" +
+                        $"{processingPoint.Item2.X}_" +
+                        $"{processingPoint.Item2.Y}.jpeg",
+                        ImageFormat.Jpeg);
+
+            string base64String;
+            using (var ms = new MemoryStream())
+            {
+                bitmap.Save(ms, ImageFormat.Bmp);
+                var imageBytes = ms.ToArray();
+                base64String = Convert.ToBase64String(imageBytes);
+            }
+
+            var connection = new SQLiteConnection("Data Source=Dots.db; Pooling=true;");
+
+            var query = "INSERT INTO [Images] (DotId, Image) " +
+                        $"VALUES ({processingPoint.Item1}, '{base64String}')";
+
+            var cmd = new SQLiteCommand(query) {Connection = connection};
+            connection.Open();
+            cmd.ExecuteNonQuery();
+            connection.Close();
         }
 
         private BitmapImage ImageToBitmapImage(Image<Bgr, byte> image)
