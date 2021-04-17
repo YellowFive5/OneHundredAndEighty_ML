@@ -6,20 +6,21 @@
         xmlns:local="clr-namespace:DiffImagesCollector"
         mc:Ignorable="d"
         Title="DiffImagesCollector"
-        Height="1200"
-        Width="2000"
-        ResizeMode="NoResize">
+        Height="500"
+        Width="500">
     <Window.DataContext>
         <local:MainWindowViewModel />
     </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="10" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="10" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="10" />
-            <RowDefinition Height="50" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="10" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="10" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -29,27 +30,50 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="10" />
         </Grid.ColumnDefinitions>
-        <Image Grid.Row="1"
+        <Grid Grid.Row="1"
+              Grid.RowSpan="3"
+              Grid.Column="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="10" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="10" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="10" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="10" />
+            </Grid.ColumnDefinitions>
+            <Image Grid.Row="3"
+                   Grid.Column="1"
+                   Grid.ColumnSpan="3"
+                   Source="{Binding ProjectionBitmap}" />
+            <Button
+                Grid.Row="1"
+                Grid.Column="1"
+                Content="Capture"
+                Click="CaptureButton_OnClick" />
+            <Button
+                Grid.Row="1"
+                Grid.Column="3"
+                Content="Clear"
+                Click="ClearButton_OnClick" />
+
+        </Grid>
+        <Image Grid.Row="7"
                Grid.Column="1"
                Source="{Binding BackgroundBitmap}" />
-        <Image Grid.Row="1"
-               Grid.Column="3"
+        <Image Grid.Row="5"
+               Grid.Column="1"
                Source="{Binding ThrowBitmap}" />
         <Image Grid.Row="3"
                Grid.Column="1"
                Source="{Binding ThrowProcessedBitmap}" />
-        <Image Grid.Row="3"
-               Grid.Column="3"
+        <Image Grid.Row="1"
+               Grid.Column="1"
                Source="{Binding DiffBitmap}" />
-        <Button
-            Grid.Row="5"
-            Grid.Column="1"
-            Content="Capture"
-            Click="CaptureButton_OnClick" />
-        <Button
-            Grid.Row="5"
-            Grid.Column="3"
-            Content="Clear"
-            Click="ClearButton_OnClick" />
     </Grid>
 </Window>

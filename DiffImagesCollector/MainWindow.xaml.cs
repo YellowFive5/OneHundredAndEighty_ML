@@ -16,6 +16,7 @@ namespace DiffImagesCollector
             viewModel = new MainWindowViewModel();
             DataContext = viewModel;
             viewModel.TakeBackgroundCapture();
+            viewModel.DrawProjection();
         }
 
         private void CaptureButton_OnClick(object sender, RoutedEventArgs e)
