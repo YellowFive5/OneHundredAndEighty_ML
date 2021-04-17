@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Data.SQLite;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -97,7 +98,25 @@ namespace DotsMapper
                 DrawCircle(ProjectionBackgroundImage, dot.Item1, 2, new MCvScalar(new Random().Next(50, 254), new Random().Next(50, 254), new Random().Next(50, 254)), 4);
             }
 
+            // Save dots to db
+            SaveDots(dots);
+
             DartboardImage = EmguImageToBitmapImage(ProjectionBackgroundImage);
+        }
+
+        private void SaveDots(IEnumerable<(PointF, string)> dots)
+        {
+            var connection = new SQLiteConnection("Data Source=Dots.db; Pooling=true;");
+
+            foreach (var dot in dots)
+            {
+                var query = $"INSERT INTO [Dots] (X,Y,Result) " +
+                            $"VALUES ({dot.Item1.X},{dot.Item1.Y},'{dot.Item2}')";
+                var cmd = new SQLiteCommand(query) {Connection = connection};
+                connection.Open();
+                cmd.ExecuteNonQuery();
+                connection.Close();
+            }
         }
 
         private IEnumerable<(PointF, string)> GetDots()
