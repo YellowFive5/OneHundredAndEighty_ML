@@ -44,7 +44,7 @@ Further calculation process will use synthetic 1300x1300 px drawed dartboard ima
 
 ![2021-04-14 16_05_20-DotsMapper](https://user-images.githubusercontent.com/42347722/114715164-749cda80-9d3b-11eb-8573-dd5fb24479d8.png)
 
-21 bull point and 108 _25 points at all.
+21 bull points and 108 _25 points at all.
 
 All 129 points collected to local SQLite.db
 
