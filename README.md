@@ -3,6 +3,7 @@
 * [1. Some pre-calculations](https://github.com/YellowFive5/OneHundredAndEighty_ML#1-some-pre-calculations)
 * [2. Only one camera](https://github.com/YellowFive5/OneHundredAndEighty_ML#2-only-one-camera)
 * [3. DotsMapper](https://github.com/YellowFive5/OneHundredAndEighty_ML#3-dotsmapper)
+* [4. DiffImagesCollector](https://github.com/YellowFive5/OneHundredAndEighty_ML#4-diffimagescollector)
 
 # OneHundredAndEighty_ML
 
@@ -43,7 +44,15 @@ Further calculation process will use synthetic 1300x1300 px drawed dartboard ima
 
 ![2021-04-14 16_05_20-DotsMapper](https://user-images.githubusercontent.com/42347722/114715164-749cda80-9d3b-11eb-8573-dd5fb24479d8.png)
 
-21 bull point and 108 _25 points
+21 bull point and 108 _25 points at all.
+
+All 129 points collected to local SQLite.db
+
+## 4. DiffImagesCollector
+![2021-04-18 13_55_35-Window](https://user-images.githubusercontent.com/42347722/115143093-f3508b00-a04d-11eb-8c70-ad59ed66988b.png)
+With [this simple util](https://github.com/YellowFive5/OneHundredAndEighty_ML/tree/main/DiffImagesCollector) I get next point from .db and it shows on projection. So I need to manually stick dart in this point and get capture. Diff images will save in filesystem and .db 
+
+I plan to take some 'clear' diff-captures for each point (maybe 2 or 3) and then some 'dirty-overlapped' captures this way. After that I will have small dataset to try to learn NN.
 
 ...to be continued...
 
