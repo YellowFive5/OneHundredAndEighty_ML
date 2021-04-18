@@ -99,14 +99,13 @@ namespace DiffImagesCollector
         private const int ProjectionCoefficient = 3;
         private readonly MCvScalar projectionGridColor = new Bgr(Color.DarkGray).MCvScalar;
         private readonly Bgr projectionDigitsColor = new(Color.White);
-        private readonly MCvScalar poiDotColor = new Bgr(Color.BlueViolet).MCvScalar;
+        private readonly MCvScalar poiDotColor = new Bgr(Color.Red).MCvScalar;
         private const int ProjectionGridThickness = 2;
         private const double SectorStepRad = 0.314159;
         private const double SemiSectorStepRad = SectorStepRad / 2;
         private const double StartRadSector_11 = -3.14159;
         private const double ProjectionDigitsScale = 2;
         private const int ProjectionDigitsThickness = 2;
-        private const float DeNoiseCoefficient = 25.0f;
 
         private static readonly PointF projectionCenterPoint = new((float) ProjectionFrameSide / 2,
                                                                    (float) ProjectionFrameSide / 2);
@@ -153,17 +152,6 @@ namespace DiffImagesCollector
                 radSector += SectorStepRad;
             }
 
-            // var dots = GetDots();
-            //
-            // //  Draw POI dots
-            // foreach (var dot in dots)
-            // {
-            //     DrawCircle(ProjectionBackgroundImage, dot.Item1, 2, new MCvScalar(new Random().Next(50, 254), new Random().Next(50, 254), new Random().Next(50, 254)), 4);
-            // }
-            //
-            // // Save dots to db
-            // SaveDots(dots);
-
             ProjectionBitmap = ImageToBitmapImage(projectionBackgroundImage);
         }
 
@@ -176,7 +164,6 @@ namespace DiffImagesCollector
                                              .ToImage<Bgr, byte>();
 
             backgroundProcessedImage = backgroundRawImage.Clone().Convert<Gray, byte>();
-            CvInvoke.FastNlMeansDenoising(backgroundProcessedImage, backgroundProcessedImage, DeNoiseCoefficient);
 
             BackgroundBitmap = ImageToBitmapImage(backgroundRawImage);
 
@@ -205,10 +192,11 @@ namespace DiffImagesCollector
             ThrowBitmap = ImageToBitmapImage(throwRawImage);
 
             throwProcessedImage = throwRawImage.Clone().Convert<Gray, byte>();
-            CvInvoke.FastNlMeansDenoising(throwProcessedImage, throwProcessedImage, DeNoiseCoefficient);
             ThrowProcessedBitmap = ImageToBitmapImage(throwProcessedImage);
 
             diffImage = throwProcessedImage.AbsDiff(backgroundProcessedImage);
+            diffImage._ThresholdBinary(new Gray(80), new Gray(255));
+
             DiffBitmap = ImageToBitmapImage(diffImage);
 
             backgroundProcessedImage = throwProcessedImage.Clone();
