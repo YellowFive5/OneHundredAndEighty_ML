@@ -6,17 +6,13 @@
         xmlns:local="clr-namespace:DiffImagesCollector"
         mc:Ignorable="d"
         Title="DiffImagesCollector"
-        Height="500"
-        Width="500">
+        Height="900"
+        Width="1500">
     <Window.DataContext>
         <local:MainWindowViewModel />
     </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="10" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="10" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="10" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="10" />
@@ -63,12 +59,6 @@
                 Click="ClearButton_OnClick" />
 
         </Grid>
-        <Image Grid.Row="7"
-               Grid.Column="1"
-               Source="{Binding BackgroundBitmap}" />
-        <Image Grid.Row="5"
-               Grid.Column="1"
-               Source="{Binding ThrowBitmap}" />
         <Image Grid.Row="3"
                Grid.Column="1"
                Source="{Binding ThrowProcessedBitmap}" />

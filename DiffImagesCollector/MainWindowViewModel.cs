@@ -34,30 +34,6 @@ namespace DiffImagesCollector
 
         private BitmapImage projectionBitmap;
 
-        public BitmapImage BackgroundBitmap
-        {
-            get => backgroundBitmap;
-            set
-            {
-                backgroundBitmap = value;
-                OnPropertyChanged(nameof(BackgroundBitmap));
-            }
-        }
-
-        private BitmapImage backgroundBitmap;
-
-        public BitmapImage ThrowBitmap
-        {
-            get => throwBitmap;
-            set
-            {
-                throwBitmap = value;
-                OnPropertyChanged(nameof(ThrowBitmap));
-            }
-        }
-
-        private BitmapImage throwBitmap;
-
         public BitmapImage ThrowProcessedBitmap
         {
             get => throwProcessedBitmap;
@@ -165,10 +141,6 @@ namespace DiffImagesCollector
 
             backgroundProcessedImage = backgroundRawImage.Clone().Convert<Gray, byte>();
 
-            BackgroundBitmap = ImageToBitmapImage(backgroundRawImage);
-
-            ThrowBitmap = BackgroundBitmap;
-
             ThrowProcessedBitmap = ImageToBitmapImage(backgroundProcessedImage);
 
             var blackBlank = backgroundProcessedImage.Clone();
@@ -187,9 +159,6 @@ namespace DiffImagesCollector
                                         .ToImage<Bgr, byte>();
 
             backgroundRawImage = throwRawImage ?? backgroundRawImage;
-            BackgroundBitmap = ThrowBitmap ?? BackgroundBitmap;
-
-            ThrowBitmap = ImageToBitmapImage(throwRawImage);
 
             throwProcessedImage = throwRawImage.Clone().Convert<Gray, byte>();
             ThrowProcessedBitmap = ImageToBitmapImage(throwProcessedImage);
