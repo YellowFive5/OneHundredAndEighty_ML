@@ -9,10 +9,15 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media.Imaging;
+using WindowsInput;
+using WindowsInput.Native;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
+using Point = System.Drawing.Point;
 
 #endregion
 
@@ -321,6 +326,30 @@ namespace DiffImagesCollector
                        scale,
                        color,
                        thickness);
+        }
+
+        public async void TrackKeys()
+        {
+            var inputSimulator = new InputSimulator();
+
+            await Task.Run(() =>
+                           {
+                               while (true)
+                               {
+                                   if (inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_X))
+                                   {
+                                       Application.Current.Dispatcher.Invoke(TakeCapture);
+
+                                       Task.Delay(TimeSpan.FromSeconds(1));
+                                   }
+                                   else if (inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_C))
+                                   {
+                                       Application.Current.Dispatcher.Invoke(TakeBackgroundCapture);
+
+                                       Task.Delay(TimeSpan.FromSeconds(1));
+                                   }
+                               }
+                           });
         }
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)

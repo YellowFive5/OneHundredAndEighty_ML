@@ -18,6 +18,7 @@ namespace DiffImagesCollector
             viewModel.TakeBackgroundCapture();
             viewModel.DrawProjection();
             viewModel.ShowNextPointToStick();
+            viewModel.TrackKeys();
         }
 
         private void CaptureButton_OnClick(object sender, RoutedEventArgs e)

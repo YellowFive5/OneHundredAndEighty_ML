@@ -21,6 +21,7 @@
       <PackageReference Include="Emgu.CV" Version="4.5.1.4349" />
       <PackageReference Include="Emgu.CV.Bitmap" Version="4.5.1.4349" />
       <PackageReference Include="Emgu.CV.runtime.windows" Version="4.5.1.4349" />
+      <PackageReference Include="InputSimulator" Version="1.0.4" />
       <PackageReference Include="System.Data.SQLite" Version="1.0.113.7" />
     </ItemGroup>
 
