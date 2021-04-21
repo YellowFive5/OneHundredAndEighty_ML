@@ -328,28 +328,28 @@ namespace DiffImagesCollector
                        thickness);
         }
 
-        public async void TrackKeys()
+        public void TrackKeys()
         {
             var inputSimulator = new InputSimulator();
 
-            await Task.Run(() =>
-                           {
-                               while (true)
-                               {
-                                   if (inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_X))
-                                   {
-                                       Application.Current.Dispatcher.Invoke(TakeCapture);
+            Task.Run(() =>
+                     {
+                         while (true)
+                         {
+                             if (inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_X))
+                             {
+                                 Application.Current.Dispatcher.Invoke(TakeCapture);
 
-                                       Task.Delay(TimeSpan.FromSeconds(1));
-                                   }
-                                   else if (inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_C))
-                                   {
-                                       Application.Current.Dispatcher.Invoke(TakeBackgroundCapture);
+                                 Task.Delay(TimeSpan.FromSeconds(1));
+                             }
+                             else if (inputSimulator.InputDeviceState.IsKeyDown(VirtualKeyCode.VK_C))
+                             {
+                                 Application.Current.Dispatcher.Invoke(TakeBackgroundCapture);
 
-                                       Task.Delay(TimeSpan.FromSeconds(1));
-                                   }
-                               }
-                           });
+                                 Task.Delay(TimeSpan.FromSeconds(1));
+                             }
+                         }
+                     });
         }
 
         private void OnPropertyChanged([CallerMemberName] string propertyName = null)
