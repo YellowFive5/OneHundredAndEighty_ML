@@ -141,8 +141,13 @@ namespace DiffImagesCollector
             var videoCapture = new VideoCapture(0, VideoCapture.API.DShow);
             videoCapture.SetCaptureProperty(CapProp.FrameWidth, 1280);
             videoCapture.SetCaptureProperty(CapProp.FrameHeight, 720);
-            backgroundRawImage = videoCapture.QueryFrame()
-                                             .ToImage<Bgr, byte>();
+            var frame = videoCapture.QueryFrame();
+            if (frame == null)
+            {
+                return;
+            }
+
+            backgroundRawImage = frame.ToImage<Bgr, byte>();
 
             backgroundProcessedImage = backgroundRawImage.Clone().Convert<Gray, byte>();
 
@@ -160,8 +165,13 @@ namespace DiffImagesCollector
             var videoCapture = new VideoCapture(0, VideoCapture.API.DShow);
             videoCapture.SetCaptureProperty(CapProp.FrameWidth, 1280);
             videoCapture.SetCaptureProperty(CapProp.FrameHeight, 720);
-            throwRawImage = videoCapture.QueryFrame()
-                                        .ToImage<Bgr, byte>();
+            var frame = videoCapture.QueryFrame();
+            if (frame == null)
+            {
+                return;
+            }
+
+            throwRawImage = frame.ToImage<Bgr, byte>();
 
             backgroundRawImage = throwRawImage ?? backgroundRawImage;
 
