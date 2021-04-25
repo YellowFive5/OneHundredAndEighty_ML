@@ -49,7 +49,7 @@ Further calculation process will use synthetic 1300x1300 px drawed dartboard ima
 All 129 points collected to local SQLite.db
 
 ## 4. DiffImagesCollector
-![2021-04-18 13_55_35-Window](https://user-images.githubusercontent.com/42347722/115143093-f3508b00-a04d-11eb-8c70-ad59ed66988b.png)
+![2021-04-25 14_12_05-DiffImagesCollector](https://user-images.githubusercontent.com/42347722/115991400-e04f3500-a5d0-11eb-8513-81911357cad2.png)
 With [this simple util](https://github.com/YellowFive5/OneHundredAndEighty_ML/tree/main/DiffImagesCollector) I get next point from .db and it shows on projection. So I need to manually stick dart in this point and get capture. Diff images will save in filesystem and .db 
 
 I plan to take some 'clear' diff-captures for each point (maybe 2 or 3) and then some 'dirty-overlapped' captures this way. After that I will have small dataset to try to learn NN.
