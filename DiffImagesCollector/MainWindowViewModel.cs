@@ -87,6 +87,7 @@ namespace DiffImagesCollector
         private const double StartRadSector_11 = -3.14159;
         private const double ProjectionDigitsScale = 2;
         private const int ProjectionDigitsThickness = 2;
+        private const int RoiSide = 200;
 
         private static readonly PointF projectionCenterPoint = new((float) ProjectionFrameSide / 2,
                                                                    (float) ProjectionFrameSide / 2);
@@ -233,6 +234,11 @@ namespace DiffImagesCollector
 
             var projectionImageWithDot = projectionBackgroundImage.Clone();
             DrawCircle(projectionImageWithDot, processingPoint.Item2, 2, poiDotColor, 4);
+
+            projectionImageWithDot.ROI = new Rectangle((int) processingPoint.Item2.X - RoiSide / 2,
+                                                       (int) processingPoint.Item2.Y - RoiSide / 2,
+                                                       RoiSide,
+                                                       RoiSide);
 
             ProjectionBitmap = ImageToBitmapImage(projectionImageWithDot);
         }
