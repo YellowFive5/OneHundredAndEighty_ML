@@ -235,8 +235,8 @@ namespace DiffImagesCollector
             var projectionImageWithDot = projectionBackgroundImage.Clone();
             DrawCircle(projectionImageWithDot, processingPoint.Item2, 2, poiDotColor, 4);
 
-            projectionImageWithDot.ROI = new Rectangle((int) processingPoint.Item2.X - RoiSide / 2,
-                                                       (int) processingPoint.Item2.Y - RoiSide / 2,
+            projectionImageWithDot.ROI = new Rectangle((int) projectionCenterPoint.X - RoiSide / 2,
+                                                       (int) projectionCenterPoint.Y - RoiSide / 2,
                                                        RoiSide,
                                                        RoiSide);
 
