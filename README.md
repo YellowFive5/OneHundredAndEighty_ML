@@ -52,7 +52,14 @@ All 129 points collected to local SQLite.db
 ![2021-04-25 14_12_05-DiffImagesCollector](https://user-images.githubusercontent.com/42347722/115991400-e04f3500-a5d0-11eb-8513-81911357cad2.png)
 With [this simple util](https://github.com/YellowFive5/OneHundredAndEighty_ML/tree/main/DiffImagesCollector) I get next point from .db and it shows on projection. So I need to manually stick dart in this point and get capture. Diff images will save in filesystem and .db 
 
-I plan to take some 'clear' diff-captures for each point (maybe 2 or 3) and then some 'dirty-overlapped' captures this way. After that I will have small dataset to try to learn NN.
+I plan to take some 'clear' diff-captures for each point. After that I will have small dataset to try to learn NN.
+
+## 5. Collecting dataset
+![IMG_2458](https://user-images.githubusercontent.com/42347722/116810408-506b3700-ab4c-11eb-80bb-cb4b053b9688.jpeg)
+
+![2021-05-02 13_40_08-Images](https://user-images.githubusercontent.com/42347722/116810461-94f6d280-ab4c-11eb-83ed-6a7da7f0e0a9.png)
+
+516 images (x4 for each point) collected. Now it's time to try to learn model.
 
 ...to be continued...
 
