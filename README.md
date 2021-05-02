@@ -4,6 +4,7 @@
 * [2. Only one camera](https://github.com/YellowFive5/OneHundredAndEighty_ML#2-only-one-camera)
 * [3. DotsMapper](https://github.com/YellowFive5/OneHundredAndEighty_ML#3-dotsmapper)
 * [4. DiffImagesCollector](https://github.com/YellowFive5/OneHundredAndEighty_ML#4-diffimagescollector)
+* [5. Collecting dataset](https://github.com/YellowFive5/OneHundredAndEighty_ML/blob/main/README.md#5-collecting-dataset)
 
 # OneHundredAndEighty_ML
 
