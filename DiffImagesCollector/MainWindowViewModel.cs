@@ -248,9 +248,11 @@ namespace DiffImagesCollector
             var bitmap = new Bitmap(DiffBitmap.StreamSource);
             Directory.CreateDirectory("Images");
             bitmap.Save("./Images/" +
+                        $"{processingPoint.Item1}_" +
                         $"{processingPoint.Item3}_" +
                         $"{processingPoint.Item2.X}_" +
-                        $"{processingPoint.Item2.Y}.jpeg",
+                        $"{processingPoint.Item2.Y}_" +
+                        $"{Guid.NewGuid():N}.jpeg",
                         ImageFormat.Jpeg);
 
             string base64String;
