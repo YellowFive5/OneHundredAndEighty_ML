@@ -15,27 +15,62 @@ namespace BinaryLearning
     {
         static void Main(string[] args)
         {
+            // var arch = ImageClassificationTrainer.Architecture.ResnetV2101;
+            var epochs = 1000;
+            // var testFraction = 0.3d;
+
             var projectDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../"));
             var dataSetDir = Path.GetFullPath(Path.Combine(projectDir, "../../DataSet/Сlear_bull_25_x4/TrainingImages"));
-
             var imagesData = LoadImagesFromDirectory(dataSetDir);
+            var modelsFolder = Path.Combine(projectDir, "../../DataSet/Сlear_bull_25_x4/TrainedModels");
 
-            MLContext mlContext = new MLContext();
-            IDataView imgData = mlContext.Data.LoadFromEnumerable(imagesData);
+            List<ImageClassificationTrainer.Architecture> architectures = new List<ImageClassificationTrainer.Architecture>
+                                                                          {
+                                                                              ImageClassificationTrainer.Architecture.ResnetV2101,
+                                                                              ImageClassificationTrainer.Architecture.ResnetV250,
+                                                                              ImageClassificationTrainer.Architecture.MobilenetV2,
+                                                                              ImageClassificationTrainer.Architecture.InceptionV3
+                                                                          };
+            List<double> testFractions = new List<double>
+                                         {
+                                             0.01,
+                                             0.05,
+                                             0.1,
+                                             0.15,
+                                             0.2,
+                                             0.25,
+                                             0.3,
+                                             0.35
+                                         };
 
-            // var model = TrainModel(mlContext, imgData, dataSetDir);
-            // mlContext.Model.Save(model, imgData.Schema, "binaryModel.zip");
+            foreach (var architecture in architectures)
+            {
+                foreach (var fraction in testFractions)
+                {
+                    MLContext mlContext = new MLContext();
+                    IDataView imgData = mlContext.Data.LoadFromEnumerable(imagesData);
+                    var modelName = $"{architecture}_e_{epochs}_{fraction}.zip";
+                    var model = TrainModel(mlContext, imgData, dataSetDir, architecture, epochs, fraction);
+                    mlContext.Model.Save(model, imgData.Schema, Path.Combine(modelsFolder, modelName));
+                }
+            }
 
-            var model = mlContext.Model.Load(Path.Combine(projectDir, "../../DataSet/Сlear_bull_25_x4/binaryModel.zip"), out var modelSchema);
+            //save
+            // var modelName = $"{arch}_e_{epochs}_{testFraction}.zip";
+            // var model = TrainModel(mlContext, imgData, dataSetDir, arch, epochs, testFraction);
+            // mlContext.Model.Save(model, imgData.Schema, Path.Combine(modelsFolder, modelName));
 
-            var testImagesFolder = Path.Combine(dataSetDir, "../TestImages");
-            ClassifyImagesFromFolder(mlContext, model, Path.Combine(projectDir, testImagesFolder));
+            //load and test
+            //var modelName = $"{arch}_e_{epochs}_{testFraction}.zip";
+            // var model = mlContext.Model.Load(Path.Combine(modelsFolder, modelName), out var modelSchema);
+            // var testImagesFolder = Path.Combine(dataSetDir, "../TestImages");
+            // ClassifyImagesFromFolder(mlContext, model, Path.Combine(projectDir, testImagesFolder));
 
             Console.WriteLine("Hello ML!");
             Console.ReadKey();
         }
 
-        private static ITransformer TrainModel(MLContext mlContext, IDataView dataView, string dataSetDir)
+        private static ITransformer TrainModel(MLContext mlContext, IDataView dataView, string dataSetDir, ImageClassificationTrainer.Architecture architecture, int epochs, double testFraction)
         {
             IDataView shuffledData = mlContext.Data.ShuffleRows(dataView);
             var preprocessingPipeline = mlContext.Transforms.Conversion.MapValueToKey(inputColumnName: "Label",
@@ -44,7 +79,7 @@ namespace BinaryLearning
                                                                                                 imageFolder: dataSetDir,
                                                                                                 inputColumnName: "ImgPath")); // > InputData.cs
             IDataView preProcData = preprocessingPipeline.Fit(shuffledData).Transform(shuffledData);
-            DataOperationsCatalog.TrainTestData trainSplit = mlContext.Data.TrainTestSplit(data: preProcData, testFraction: 0.05);
+            DataOperationsCatalog.TrainTestData trainSplit = mlContext.Data.TrainTestSplit(data: preProcData, testFraction: testFraction);
             DataOperationsCatalog.TrainTestData validationTestSplit = mlContext.Data.TrainTestSplit(trainSplit.TestSet);
 
             IDataView trainSet = trainSplit.TrainSet;
@@ -56,12 +91,12 @@ namespace BinaryLearning
                                         FeatureColumnName = "Img",
                                         LabelColumnName = "LabelKey",
                                         ValidationSet = validationSet,
-                                        Arch = ImageClassificationTrainer.Architecture.ResnetV2101,
+                                        Arch = architecture,
                                         MetricsCallback = metrics => Console.WriteLine(metrics),
                                         TestOnTrainSet = false,
                                         ReuseTrainSetBottleneckCachedValues = true,
                                         ReuseValidationSetBottleneckCachedValues = true,
-                                        Epoch = 1000,
+                                        Epoch = epochs,
                                     };
 
             var trainingPipeline = mlContext.MulticlassClassification.Trainers.ImageClassification(classifierOptions)
