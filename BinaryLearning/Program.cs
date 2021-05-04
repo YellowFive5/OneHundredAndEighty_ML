@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.ML;
+using Microsoft.ML.Vision;
 
 #endregion
 
@@ -15,21 +16,53 @@ namespace BinaryLearning
         static void Main(string[] args)
         {
             var projectDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../"));
-            var dataSetDir = Path.GetFullPath(Path.Combine(projectDir, "../../DataSet/Сlear_bull_25_x4"));
+            var dataSetDir = Path.GetFullPath(Path.Combine(projectDir, "../../DataSet/Сlear_bull_25_x4/Images"));
             var workspace = Path.Combine(projectDir, "workspace");
-            var assets = Path.Combine(projectDir, "assets");
+            // var assets = Path.Combine(projectDir, "assets");
 
             MLContext mlContext = new MLContext();
 
             var imagesData = LoadImagesFromDirectory(dataSetDir);
 
             IDataView imgData = mlContext.Data.LoadFromEnumerable(imagesData);
+            IDataView shuffle = mlContext.Data.ShuffleRows(imgData);
+            var preprocessingPipeline = mlContext.Transforms.Conversion.MapValueToKey(inputColumnName: "Label",
+                                                                                      outputColumnName: "LabelKey")
+                                                 .Append(mlContext.Transforms.LoadRawImageBytes(outputColumnName: "Img",
+                                                                                                imageFolder: dataSetDir,
+                                                                                                inputColumnName: "ImgPath")); // > InputData.cs
+            IDataView preProcData = preprocessingPipeline.Fit(shuffle).Transform(shuffle);
+            DataOperationsCatalog.TrainTestData trainSplit = mlContext.Data.TrainTestSplit(data: preProcData, testFraction: 0.25);
+            DataOperationsCatalog.TrainTestData validationTestSplit = mlContext.Data.TrainTestSplit(trainSplit.TestSet);
+
+            IDataView trainSet = trainSplit.TrainSet;
+            IDataView validationSet = validationTestSplit.TrainSet;
+            IDataView testSet = validationTestSplit.TestSet;
+
+            var classifierOptions = new ImageClassificationTrainer.Options
+                                    {
+                                        FeatureColumnName = "Img",
+                                        LabelColumnName = "LabelKey",
+                                        ValidationSet = validationSet,
+                                        Arch = ImageClassificationTrainer.Architecture.ResnetV2101,
+                                        MetricsCallback = metrics => Console.WriteLine(metrics),
+                                        TestOnTrainSet = false,
+                                        ReuseTrainSetBottleneckCachedValues = true,
+                                        ReuseValidationSetBottleneckCachedValues = true
+                                    };
+
+            var trainingPipeline = mlContext.MulticlassClassification.Trainers.ImageClassification(classifierOptions)
+                                            .Append(mlContext.Transforms.Conversion.MapKeyToValue("PredictedLabel"));
+
+            ITransformer trainedModel = trainingPipeline.Fit(trainSet);
+
+            ClassifyOneImg(mlContext, testSet, trainedModel);
 
             Console.WriteLine("Hello ML!");
             Console.ReadKey();
         }
 
-        private static IEnumerable<ImageData> LoadImagesFromDirectory(string folder)
+        private static IEnumerable<ImgData> LoadImagesFromDirectory(string folder)
         {
             foreach (var file in Directory.GetFiles(folder, "*", SearchOption.AllDirectories)
                                           .Where(f => Path.GetExtension(f) == ".jpeg"))
@@ -39,12 +72,28 @@ namespace BinaryLearning
                                    .Where(w => w != string.Empty)
                                    .ToArray();
 
-                yield return new ImageData
+                yield return new ImgData
                              {
-                                 ImagePath = file,
+                                 ImgPath = file,
                                  Label = splitted[1]
                              };
             }
+        }
+
+        private static void OutputPred(Output pred)
+        {
+            string imgName = Path.GetFileName(pred.ImgPath);
+            Console.WriteLine($"Image: {imgName} | Actual Label: {pred.Label} | Predicted Label: {pred.PredictedLabel}");
+        }
+
+        private static void ClassifyOneImg(MLContext myContext, IDataView data, ITransformer trainedModel)
+        {
+            PredictionEngine<InputData, Output> predEngine = myContext.Model.CreatePredictionEngine<InputData, Output>(trainedModel);
+            InputData image = myContext.Data.CreateEnumerable<InputData>(data, reuseRowObject: true).First();
+            Output prediction = predEngine.Predict(image);
+            //print predicted value
+            Console.WriteLine("Prediction for single image");
+            OutputPred(prediction);
         }
     }
 }
