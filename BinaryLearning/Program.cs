@@ -23,13 +23,13 @@ namespace BinaryLearning
             MLContext mlContext = new MLContext();
             IDataView imgData = mlContext.Data.LoadFromEnumerable(imagesData);
 
-            // var model = TrainModel(mlContext, imgData, dataSetDir);
-            // mlContext.Model.Save(model, imgData.Schema, "binaryModel.zip");
+            var model = TrainModel(mlContext, imgData, dataSetDir);
+            mlContext.Model.Save(model, imgData.Schema, "binaryModel.zip");
 
-            var model = mlContext.Model.Load(Path.Combine(projectDir, "../../DataSet/Сlear_bull_25_x4/binaryModel.zip"), out var modelSchema);
+            // var model = mlContext.Model.Load(Path.Combine(projectDir, "../../DataSet/Сlear_bull_25_x4/binaryModel.zip"), out var modelSchema);
 
-            var testImagesFolder = Path.Combine(dataSetDir, "../TestImages");
-            ClassifyRndImgFromFolder(mlContext, model, Path.Combine(projectDir, testImagesFolder));
+            // var testImagesFolder = Path.Combine(dataSetDir, "../TestImages");
+            // ClassifyRndImgFromFolder(mlContext, model, Path.Combine(projectDir, testImagesFolder));
 
             Console.WriteLine("Hello ML!");
             Console.ReadKey();
@@ -44,7 +44,7 @@ namespace BinaryLearning
                                                                                                 imageFolder: dataSetDir,
                                                                                                 inputColumnName: "ImgPath")); // > InputData.cs
             IDataView preProcData = preprocessingPipeline.Fit(shuffledData).Transform(shuffledData);
-            DataOperationsCatalog.TrainTestData trainSplit = mlContext.Data.TrainTestSplit(data: preProcData, testFraction: 0.25);
+            DataOperationsCatalog.TrainTestData trainSplit = mlContext.Data.TrainTestSplit(data: preProcData, testFraction: 0.05);
             DataOperationsCatalog.TrainTestData validationTestSplit = mlContext.Data.TrainTestSplit(trainSplit.TestSet);
 
             IDataView trainSet = trainSplit.TrainSet;
@@ -60,7 +60,8 @@ namespace BinaryLearning
                                         MetricsCallback = metrics => Console.WriteLine(metrics),
                                         TestOnTrainSet = false,
                                         ReuseTrainSetBottleneckCachedValues = true,
-                                        ReuseValidationSetBottleneckCachedValues = true
+                                        ReuseValidationSetBottleneckCachedValues = true,
+                                        Epoch = 1000,
                                     };
 
             var trainingPipeline = mlContext.MulticlassClassification.Trainers.ImageClassification(classifierOptions)
