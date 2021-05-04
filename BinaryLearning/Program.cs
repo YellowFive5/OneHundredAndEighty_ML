@@ -1,9 +1,11 @@
 ﻿#region Usings
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.ML;
 using Microsoft.ML.Vision;
 
@@ -23,47 +25,70 @@ namespace BinaryLearning
             var dataSetDir = Path.GetFullPath(Path.Combine(projectDir, "../../DataSet/Сlear_bull_25_x4/TrainingImages"));
             var imagesData = LoadImagesFromDirectory(dataSetDir);
             var modelsFolder = Path.Combine(projectDir, "../../DataSet/Сlear_bull_25_x4/TrainedModels");
+            var testImagesFolder = Path.Combine(dataSetDir, "../TestImages");
 
-            List<ImageClassificationTrainer.Architecture> architectures = new List<ImageClassificationTrainer.Architecture>
-                                                                          {
-                                                                              ImageClassificationTrainer.Architecture.ResnetV2101,
-                                                                              ImageClassificationTrainer.Architecture.ResnetV250,
-                                                                              ImageClassificationTrainer.Architecture.MobilenetV2,
-                                                                              ImageClassificationTrainer.Architecture.InceptionV3
-                                                                          };
-            List<double> testFractions = new List<double>
-                                         {
-                                             0.01,
-                                             0.05,
-                                             0.1,
-                                             0.15,
-                                             0.2,
-                                             0.25,
-                                             0.3,
-                                             0.35
-                                         };
-
-            foreach (var architecture in architectures)
+            // train and save all models
+            // List<ImageClassificationTrainer.Architecture> architectures = new List<ImageClassificationTrainer.Architecture>
+            //                                                               {
+            //                                                                   ImageClassificationTrainer.Architecture.ResnetV2101,
+            //                                                                   ImageClassificationTrainer.Architecture.ResnetV250,
+            //                                                                   ImageClassificationTrainer.Architecture.MobilenetV2,
+            //                                                                   ImageClassificationTrainer.Architecture.InceptionV3
+            //                                                               };
+            // List<double> testFractions = new List<double>
+            //                              {
+            //                                  0.01,
+            //                                  0.05,
+            //                                  0.1,
+            //                                  0.15,
+            //                                  0.2,
+            //                                  0.25,
+            //                                  0.3,
+            //                                  0.35
+            //                              };
+            //
+            // foreach (var architecture in architectures)
+            // {
+            //     foreach (var fraction in testFractions)
+            //     {
+            //         MLContext mlContext = new MLContext();
+            //         IDataView imgData = mlContext.Data.LoadFromEnumerable(imagesData);
+            //         var modelName = $"{architecture}_e_{epochs}_{fraction}.zip";
+            //         var model = TrainModel(mlContext, imgData, dataSetDir, architecture, epochs, fraction);
+            //         mlContext.Model.Save(model, imgData.Schema, Path.Combine(modelsFolder, modelName));
+            //     }
+            // }
+            
+            
+            // load and test all models
+            var results = new ConcurrentBag<(string, int)>();
+            var tasks = new List<Task>();
+            foreach (var modelPath in Directory.GetFiles(modelsFolder, "*", SearchOption.AllDirectories)
+                                               .ToArray())
             {
-                foreach (var fraction in testFractions)
-                {
-                    MLContext mlContext = new MLContext();
-                    IDataView imgData = mlContext.Data.LoadFromEnumerable(imagesData);
-                    var modelName = $"{architecture}_e_{epochs}_{fraction}.zip";
-                    var model = TrainModel(mlContext, imgData, dataSetDir, architecture, epochs, fraction);
-                    mlContext.Model.Save(model, imgData.Schema, Path.Combine(modelsFolder, modelName));
-                }
+                tasks.Add(Task.Run(() =>
+                                   {
+                                       MLContext mlContext = new MLContext();
+                                       var model = mlContext.Model.Load(modelPath, out var modelSchema);
+                                       ClassifyImagesFromFolder(mlContext, model, Path.Combine(projectDir, testImagesFolder), modelPath, results);
+                                   })
+                         );
             }
 
-            //save
+            Task.WaitAll(tasks.ToArray());
+            foreach (var result in results.OrderByDescending(i => i.Item2))
+            {
+                Console.WriteLine($"{result.Item1} - {result.Item2}/26");
+            }
+
+            //save one
             // var modelName = $"{arch}_e_{epochs}_{testFraction}.zip";
             // var model = TrainModel(mlContext, imgData, dataSetDir, arch, epochs, testFraction);
             // mlContext.Model.Save(model, imgData.Schema, Path.Combine(modelsFolder, modelName));
 
-            //load and test
+            //load and test one
             //var modelName = $"{arch}_e_{epochs}_{testFraction}.zip";
             // var model = mlContext.Model.Load(Path.Combine(modelsFolder, modelName), out var modelSchema);
-            // var testImagesFolder = Path.Combine(dataSetDir, "../TestImages");
             // ClassifyImagesFromFolder(mlContext, model, Path.Combine(projectDir, testImagesFolder));
 
             Console.WriteLine("Hello ML!");
@@ -123,25 +148,40 @@ namespace BinaryLearning
             }
         }
 
-        private static void ClassifyImagesFromFolder(MLContext myContext, ITransformer trainedModel, string folderPath)
+        private static void ClassifyImagesFromFolder(MLContext myContext, ITransformer trainedModel, string imagesFolderPath, string modelPath, ConcurrentBag<(string, int)> mainResults)
         {
-            var files = Directory.GetFiles(folderPath, "*", SearchOption.AllDirectories)
-                                 .Where(f => Path.GetExtension(f) == ".jpeg")
-                                 .ToArray();
-            foreach (var file in files)
+            var imageFiles = Directory.GetFiles(imagesFolderPath, "*", SearchOption.AllDirectories)
+                                      .Where(f => Path.GetExtension(f) == ".jpeg")
+                                      .ToArray();
+
+            var modelName = Path.GetFileName(modelPath);
+            var results = new ConcurrentBag<(string, string)>();
+
+            foreach (var imageFile in imageFiles)
             {
+                var splitted = Path.GetFileName(imageFile)
+                                   .Split(new[] {'_'})
+                                   .Where(w => w != string.Empty)
+                                   .ToArray();
+
                 InputData image = new InputData
                                   {
-                                      ImgPath = file,
-                                      Img = File.ReadAllBytes(file),
-                                      Label = file
+                                      ImgPath = imageFile,
+                                      Img = File.ReadAllBytes(imageFile),
+                                      Label = splitted[0]
                                   };
 
 
                 PredictionEngine<InputData, Output> predEngine = myContext.Model.CreatePredictionEngine<InputData, Output>(trainedModel);
                 Output prediction = predEngine.Predict(image);
-                OutputPred(prediction);
+
+                results.Add((image.Label, prediction.PredictedLabel));
+
+                // OutputPred(prediction);
             }
+
+            mainResults.Add((modelName, results.Count(r => r.Item1 == r.Item2)));
+            // Console.WriteLine($"{modelName} complete");
         }
 
         private static void OutputPred(Output pred)
