@@ -16,7 +16,7 @@ namespace BinaryLearning
         static void Main(string[] args)
         {
             var projectDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../"));
-            var dataSetDir = Path.GetFullPath(Path.Combine(projectDir, "../../DataSet/Сlear_bull_25_x4/Images"));
+            var dataSetDir = Path.GetFullPath(Path.Combine(projectDir, "../../DataSet/Сlear_bull_25_x4/TrainingImages"));
 
             var imagesData = LoadImagesFromDirectory(dataSetDir);
 
@@ -26,10 +26,10 @@ namespace BinaryLearning
             // var model = TrainModel(mlContext, imgData, dataSetDir);
             // mlContext.Model.Save(model, imgData.Schema, "binaryModel.zip");
 
-            DataViewSchema modelSchema;
-            var model = mlContext.Model.Load(Path.Combine(projectDir, "../../DataSet/Сlear_bull_25_x4/binaryModel.zip"), out modelSchema);
+            var model = mlContext.Model.Load(Path.Combine(projectDir, "../../DataSet/Сlear_bull_25_x4/binaryModel.zip"), out var modelSchema);
 
-            // ClassifyImg(mlContext, imgData, model);
+            var testImagesFolder = Path.Combine(dataSetDir, "../TestImages");
+            ClassifyRndImgFromFolder(mlContext, model, Path.Combine(projectDir, testImagesFolder));
 
             Console.WriteLine("Hello ML!");
             Console.ReadKey();
@@ -87,10 +87,21 @@ namespace BinaryLearning
             }
         }
 
-        private static void ClassifyImg(MLContext myContext, IDataView data, ITransformer trainedModel)
+        private static void ClassifyRndImgFromFolder(MLContext myContext, ITransformer trainedModel, string folderPath)
         {
+            var files = Directory.GetFiles(folderPath, "*", SearchOption.AllDirectories)
+                                 .Where(f => Path.GetExtension(f) == ".jpeg")
+                                 .ToArray();
+            var rndImageFilePath = files.ElementAt(new Random().Next(0, files.Count()));
+
+            InputData image = new InputData
+                              {
+                                  ImgPath = rndImageFilePath,
+                                  Img = File.ReadAllBytes(rndImageFilePath)
+                              };
+
+
             PredictionEngine<InputData, Output> predEngine = myContext.Model.CreatePredictionEngine<InputData, Output>(trainedModel);
-            InputData image = myContext.Data.CreateEnumerable<InputData>(data, reuseRowObject: true).ElementAt(new Random().Next(1, 515));
             Output prediction = predEngine.Predict(image);
             Console.WriteLine("Prediction for single image");
             OutputPred(prediction);
