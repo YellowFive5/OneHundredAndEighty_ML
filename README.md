@@ -1,3 +1,7 @@
+# OneHundredAndEighty_ML
+
+Detection, based on machine learning
+
 ## Contents
 * [0. Why and what](https://github.com/YellowFive5/OneHundredAndEighty_ML#why)
 * [1. Some pre-calculations](https://github.com/YellowFive5/OneHundredAndEighty_ML#1-some-pre-calculations)
@@ -6,10 +10,6 @@
 * [4. DiffImagesCollector](https://github.com/YellowFive5/OneHundredAndEighty_ML#4-diffimagescollector)
 * [5. Collecting dataset](https://github.com/YellowFive5/OneHundredAndEighty_ML/blob/main/README.md#5-collecting-dataset)
 * [6. .NET ML from box](https://github.com/YellowFive5/OneHundredAndEighty_ML/blob/main/README.md#6-net-ml-from-box)
-
-# OneHundredAndEighty_ML
-
-Detection, based on machine learning
 
 ## Why?
 
