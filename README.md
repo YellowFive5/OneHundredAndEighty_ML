@@ -62,6 +62,19 @@ I plan to take some 'clear' diff-captures for each point. After that I will have
 
 516 images (x4 for each point) collected. Now it's time to try to learn model.
 
+## 6. .NET ML from box
+First thing, that I dicided to try, was simple image classification using .NET ML libraries. I tried [this guide](https://analyticsindiamag.com/step-by-step-guide-for-image-classification-using-ml-net/)
+
+So I has 516 images, marked with 2 types of labels (Bull or 25). I wrote code to train model on images and save it. In setup parameters I found, that there are several model architectures and test fraction rate of decimal value. So I tried and saved all.
+
+Then I took 26 new images to test results of learned models predictions: 5 straight sticks in bull, 5 sticks in bull on different angle, 8 straight sticks in 25 and 5 sticks in 25 on different angle. Then I tested all this images on all models and printed right predictions count:
+
+![2021-05-04 20_47_57-_C__Program Files_JetBrains_JetBrains Rider 2021 1 1_plugins_dpa_DotFiles_JetBra](https://user-images.githubusercontent.com/42347722/117103593-4a12d000-ad83-11eb-81b5-c94700d8c48b.png)
+
+6 wrong predictions in best models results is in bull on different angle.
+
+So, raw results says, that idea of ML works overall, but we need more training dataset at first and more deep understanding of ML techniques and tips/tricks.
+
 ...to be continued...
 
 P.S. - If you like this stuff and if you want you can donate me for some beer 🍻 (click 💜"Sponsor" button in the top of a page)
