@@ -64,7 +64,7 @@ I plan to take some 'clear' diff-captures for each point. After that I will have
 516 images (x4 for each point) collected. Now it's time to try to learn model.
 
 ## 6. .NET ML from box
-First thing, that I dicided to try, was simple image classification using .NET ML libraries. I tried [this guide](https://analyticsindiamag.com/step-by-step-guide-for-image-classification-using-ml-net/)
+First thing, that I decided to try, was simple image classification using .NET ML libraries. I tried [this guide](https://analyticsindiamag.com/step-by-step-guide-for-image-classification-using-ml-net/)
 
 So I has 516 images, marked with 2 types of labels (Bull or 25). I wrote code to train model on images and save it. In setup parameters I found, that there are several model architectures and test fraction rate of decimal value. So I tried and saved all.
 
