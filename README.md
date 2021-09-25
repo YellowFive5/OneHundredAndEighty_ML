@@ -10,6 +10,7 @@ Detection, based on machine learning
 * [4. DiffImagesCollector](https://github.com/YellowFive5/OneHundredAndEighty_ML#4-diffimagescollector)
 * [5. Collecting dataset](https://github.com/YellowFive5/OneHundredAndEighty_ML/blob/main/README.md#5-collecting-dataset)
 * [6. .NET ML from box](https://github.com/YellowFive5/OneHundredAndEighty_ML/blob/main/README.md#6-net-ml-from-box)
+* [Links and things](https://github.com/YellowFive5/OneHundredAndEighty_ML/blob/main/README.mdlinks-and-things)
 
 ## Why?
 
@@ -77,5 +78,11 @@ Then I took 26 new images to test results of learned models predictions: 5 strai
 So, raw results says, that idea of ML works overall, but we need more training dataset at first and more deep understanding of ML techniques and tips/tricks.
 
 ...to be continued...
+
+## Links and things
+* [Led ring origin model](https://www.thingiverse.com/thing:4753272?fbclid=IwAR1P2s8mtMV7xil93jrYmAPycB94fgMHyx9JStwKNHWg2jZmfU5ge5BDYVE)
+* [My led ring model rework](https://github.com/YellowFive5/OneHundredAndEighty_ML/files/7229550/DartsLights.zip)
+* [Camera holder origin model](https://www.thingiverse.com/thing:3114849?fbclid=IwAR1u1xJo8D-zzpK3FHEcCSob7IPIFh-mR_QWvMnZrBq3IIHZELM-ICNgpGE)
+* [My camera holder rework](https://github.com/YellowFive5/OneHundredAndEighty_ML/files/7229554/CamCaseHolder.zip)
 
 P.S. - If you like this stuff and if you want you can donate me for some beer 🍻 (click 💜"Sponsor" button in the top of a page)
