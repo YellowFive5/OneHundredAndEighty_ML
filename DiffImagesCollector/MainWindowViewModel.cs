@@ -12,11 +12,12 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
-using WindowsInput;
-using WindowsInput.Native;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
+using Emgu.CV.Util;
+using WindowsInput;
+using WindowsInput.Native;
 using Point = System.Drawing.Point;
 
 #endregion
@@ -72,7 +73,7 @@ namespace DiffImagesCollector
         private Image<Gray, byte> backgroundProcessedImage;
         private Image<Bgr, byte> throwRawImage;
         private Image<Gray, byte> throwProcessedImage;
-        private Image<Gray, byte> diffImage;
+        private Image<Bgr, byte> diffImage;
 
         #endregion
 
@@ -89,8 +90,8 @@ namespace DiffImagesCollector
         private const int ProjectionDigitsThickness = 2;
         private const int RoiSide = 200;
 
-        private static readonly PointF projectionCenterPoint = new((float) ProjectionFrameSide / 2,
-                                                                   (float) ProjectionFrameSide / 2);
+        private static readonly PointF projectionCenterPoint = new((float)ProjectionFrameSide / 2,
+                                                                   (float)ProjectionFrameSide / 2);
 
         public void DrawProjection()
         {
@@ -105,10 +106,10 @@ namespace DiffImagesCollector
             DrawCircle(projectionBackgroundImage, projectionCenterPoint, ProjectionCoefficient * 170, projectionGridColor, ProjectionGridThickness);
             for (var i = 0; i <= 360; i += 9)
             {
-                var segmentPoint1 = new PointF((float) (projectionCenterPoint.X + Math.Cos(SectorStepRad * i - SemiSectorStepRad) * ProjectionCoefficient * 170),
-                                               (float) (projectionCenterPoint.Y + Math.Sin(SectorStepRad * i - SemiSectorStepRad) * ProjectionCoefficient * 170));
-                var segmentPoint2 = new PointF((float) (projectionCenterPoint.X + Math.Cos(SectorStepRad * i - SemiSectorStepRad) * ProjectionCoefficient * 17),
-                                               (float) (projectionCenterPoint.Y + Math.Sin(SectorStepRad * i - SemiSectorStepRad) * ProjectionCoefficient * 17));
+                var segmentPoint1 = new PointF((float)(projectionCenterPoint.X + Math.Cos(SectorStepRad * i - SemiSectorStepRad) * ProjectionCoefficient * 170),
+                                               (float)(projectionCenterPoint.Y + Math.Sin(SectorStepRad * i - SemiSectorStepRad) * ProjectionCoefficient * 170));
+                var segmentPoint2 = new PointF((float)(projectionCenterPoint.X + Math.Cos(SectorStepRad * i - SemiSectorStepRad) * ProjectionCoefficient * 17),
+                                               (float)(projectionCenterPoint.Y + Math.Sin(SectorStepRad * i - SemiSectorStepRad) * ProjectionCoefficient * 17));
                 DrawLine(projectionBackgroundImage, segmentPoint1, segmentPoint2, projectionGridColor, ProjectionGridThickness);
             }
 
@@ -126,8 +127,8 @@ namespace DiffImagesCollector
             {
                 DrawString(projectionBackgroundImage,
                            sector.ToString(),
-                           (int) (projectionCenterPoint.X - 40 + Math.Cos(radSector) * ProjectionCoefficient * 190),
-                           (int) (projectionCenterPoint.Y + 20 + Math.Sin(radSector) * ProjectionCoefficient * 190),
+                           (int)(projectionCenterPoint.X - 40 + Math.Cos(radSector) * ProjectionCoefficient * 190),
+                           (int)(projectionCenterPoint.Y + 20 + Math.Sin(radSector) * ProjectionCoefficient * 190),
                            ProjectionDigitsScale,
                            projectionDigitsColor,
                            ProjectionDigitsThickness);
@@ -179,10 +180,30 @@ namespace DiffImagesCollector
             throwProcessedImage = throwRawImage.Clone().Convert<Gray, byte>();
             ThrowProcessedBitmap = ImageToBitmapImage(throwProcessedImage);
 
-            diffImage = throwProcessedImage.AbsDiff(backgroundProcessedImage);
-            diffImage._ThresholdBinary(new Gray(80), new Gray(255));
+            var greyImage = throwProcessedImage.AbsDiff(backgroundProcessedImage);
+            greyImage._ThresholdBinary(new Gray(80), new Gray(255));
 
-            DiffBitmap = ImageToBitmapImage(diffImage);
+            var coloredImage = greyImage.Clone().Convert<Bgr, byte>();
+
+            var allContours = new VectorOfVectorOfPoint();
+            CvInvoke.FindContours(greyImage, allContours, new Mat(), RetrType.External, ChainApproxMethod.ChainApproxNone);
+
+            var hullContour = new VectorOfPoint();
+
+            var plainVectorOfPoint = new VectorOfPoint();
+            for (var i = 0; i < allContours.Size; i++)
+            {
+                plainVectorOfPoint.Push(allContours[i]);
+            }
+
+            CvInvoke.ConvexHull(plainVectorOfPoint, hullContour);
+
+            for (int i = 0; i < hullContour.Size; i++)
+            {
+                CvInvoke.Line(coloredImage, hullContour[i], hullContour[(i + 1) % hullContour.Size], new Bgr(Color.Blue).MCvScalar, 5);
+            }
+
+            DiffBitmap = ImageToBitmapImage(coloredImage);
 
             backgroundProcessedImage = throwProcessedImage.Clone();
 
@@ -205,8 +226,7 @@ namespace DiffImagesCollector
                         "HAVING COUNT([Images].[DotId]) <= 3 " +
                         "LIMIT 1";
 
-            var cmd = new SQLiteCommand(query) {Connection = connection};
-
+            var cmd = new SQLiteCommand(query) { Connection = connection };
             var table = new DataTable();
             connection.Open();
             using (var dataReader = cmd.ExecuteReader())
@@ -221,25 +241,21 @@ namespace DiffImagesCollector
             }
 
             connection.Close();
-
             if (table.Rows.Count == 0)
             {
                 return;
             }
 
-            processingPoint = new Tuple<long, PointF, string>((long) table.Rows[0][0],
-                                                              new PointF((long) table.Rows[0][1],
-                                                                         (long) table.Rows[0][2]),
+            processingPoint = new Tuple<long, PointF, string>((long)table.Rows[0][0],
+                                                              new PointF((long)table.Rows[0][1],
+                                                                         (long)table.Rows[0][2]),
                                                               table.Rows[0][3].ToString());
-
             var projectionImageWithDot = projectionBackgroundImage.Clone();
             DrawCircle(projectionImageWithDot, processingPoint.Item2, 2, poiDotColor, 4);
-
-            projectionImageWithDot.ROI = new Rectangle((int) projectionCenterPoint.X - RoiSide / 2,
-                                                       (int) projectionCenterPoint.Y - RoiSide / 2,
+            projectionImageWithDot.ROI = new Rectangle((int)projectionCenterPoint.X - RoiSide / 2,
+                                                       (int)projectionCenterPoint.Y - RoiSide / 2,
                                                        RoiSide,
                                                        RoiSide);
-
             ProjectionBitmap = ImageToBitmapImage(projectionImageWithDot);
         }
 
@@ -255,29 +271,28 @@ namespace DiffImagesCollector
                         $"{Guid.NewGuid():N}.jpeg",
                         ImageFormat.Jpeg);
 
-            string base64String;
-            using (var ms = new MemoryStream())
-            {
-                bitmap.Save(ms, ImageFormat.Bmp);
-                var imageBytes = ms.ToArray();
-                base64String = Convert.ToBase64String(imageBytes);
-            }
-
-            var connection = new SQLiteConnection("Data Source=Dots.db; Pooling=true;");
-
-            var query = "INSERT INTO [Images] (DotId, Image) " +
-                        $"VALUES ({processingPoint.Item1}, '{base64String}')";
-
-            var cmd = new SQLiteCommand(query) {Connection = connection};
-            connection.Open();
-            cmd.ExecuteNonQuery();
-            connection.Close();
+            // string base64String;
+            // using (var ms = new MemoryStream())
+            // {
+            //     bitmap.Save(ms, ImageFormat.Bmp);
+            //     var imageBytes = ms.ToArray();
+            //     base64String = Convert.ToBase64String(imageBytes);
+            // }
+            //
+            // var connection = new SQLiteConnection("Data Source=Dots.db; Pooling=true;");
+            //
+            // var query = "INSERT INTO [Images] (DotId, Image) " +
+            //             $"VALUES ({processingPoint.Item1}, '{base64String}')";
+            //
+            // var cmd = new SQLiteCommand(query) { Connection = connection };
+            // connection.Open();
+            // cmd.ExecuteNonQuery();
+            // connection.Close();
         }
 
         private BitmapImage ImageToBitmapImage(Image<Bgr, byte> image)
         {
             var imageToSave = new BitmapImage();
-
             using (var stream = new MemoryStream())
             {
                 image.ToBitmap().Save(stream, ImageFormat.Bmp);
@@ -311,7 +326,7 @@ namespace DiffImagesCollector
                                 int thickness)
         {
             CvInvoke.Circle(image,
-                            new Point((int) centerpoint.X, (int) centerpoint.Y),
+                            new Point((int)centerpoint.X, (int)centerpoint.Y),
                             radius,
                             color,
                             thickness);
@@ -324,8 +339,8 @@ namespace DiffImagesCollector
                               int thickness)
         {
             CvInvoke.Line(image,
-                          new Point((int) point1.X, (int) point1.Y),
-                          new Point((int) point2.X, (int) point2.Y),
+                          new Point((int)point1.X, (int)point1.Y),
+                          new Point((int)point2.X, (int)point2.Y),
                           color,
                           thickness);
         }
