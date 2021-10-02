@@ -186,6 +186,8 @@ namespace DiffImagesCollector
 
             var coloredImage = greyImage.Clone().Convert<Bgr, byte>();
 
+            // tests
+
             var allContours = new VectorOfVectorOfPoint();
             CvInvoke.FindContours(greyImage, allContours, new Mat(), RetrType.External, ChainApproxMethod.ChainApproxNone);
 
@@ -194,19 +196,32 @@ namespace DiffImagesCollector
             var plainVectorOfPoint = new VectorOfPoint();
             for (var i = 0; i < allContours.Size; i++)
             {
-                plainVectorOfPoint.Push(allContours[i]);
+                var tempContour = allContours[i];
+                var tempContourArс = CvInvoke.ArcLength(tempContour, false);
+                if (tempContourArс > 5)
+                {
+                    plainVectorOfPoint.Push(allContours[i]);
+                }
             }
 
             CvInvoke.ConvexHull(plainVectorOfPoint, hullContour);
 
-            for (int i = 0; i < hullContour.Size; i++)
+            for (var i = 0; i < hullContour.Size; i++)
             {
                 CvInvoke.Line(coloredImage, hullContour[i], hullContour[(i + 1) % hullContour.Size], new Bgr(Color.Blue).MCvScalar, 2);
             }
 
-            var edgePoint = hullContour.ToArray().OrderByDescending(p => p.Y).ElementAt(0);
+            var hullContourArray = hullContour.ToArray();
 
-            DrawCircle(coloredImage, edgePoint, 5, new Bgr(Color.Chartreuse).MCvScalar, 2);
+            var centerX = hullContourArray.Sum(x => x.X) / hullContourArray.Length;
+            var centerY = hullContourArray.Sum(x => x.Y) / hullContourArray.Length;
+            var centerOfMassPoint = new PointF(centerX, centerY);
+            DrawCircle(coloredImage, centerOfMassPoint, 5, new Bgr(Color.Cyan).MCvScalar, 3);
+
+            var edgePoint = hullContourArray.OrderByDescending(p => p.Y).ElementAt(0);
+            DrawCircle(coloredImage, edgePoint, 5, new Bgr(Color.Chartreuse).MCvScalar, 3);
+
+            // tests
 
             DiffBitmap = ImageToBitmapImage(coloredImage);
 
