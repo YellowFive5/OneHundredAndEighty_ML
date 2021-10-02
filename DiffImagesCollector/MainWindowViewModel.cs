@@ -179,10 +179,10 @@ namespace DiffImagesCollector
             backgroundRawImage = throwRawImage ?? backgroundRawImage;
 
             throwProcessedImage = throwRawImage.Clone().Convert<Gray, byte>();
-            ThrowProcessedBitmap = ImageToBitmapImage(throwProcessedImage);
+            var throwProcessedImageColored = throwRawImage.Clone().Convert<Gray, byte>().Convert<Bgr, byte>();
 
             var greyImage = throwProcessedImage.AbsDiff(backgroundProcessedImage);
-            greyImage._ThresholdBinary(new Gray(80), new Gray(255));
+            greyImage._ThresholdBinary(new Gray(70), new Gray(255));
 
             var coloredImage = greyImage.Clone().Convert<Bgr, byte>();
 
@@ -219,11 +219,13 @@ namespace DiffImagesCollector
             DrawCircle(coloredImage, centerOfMassPoint, 5, new Bgr(Color.Cyan).MCvScalar, 3);
 
             var edgePoint = hullContourArray.OrderByDescending(p => p.Y).ElementAt(0);
-            DrawCircle(coloredImage, edgePoint, 5, new Bgr(Color.Chartreuse).MCvScalar, 3);
+            DrawCircle(coloredImage, edgePoint, 3, new Bgr(Color.Red).MCvScalar, 3);
+            DrawCircle(throwProcessedImageColored, edgePoint, 3, new Bgr(Color.Red).MCvScalar, 3);
 
             // tests
 
             DiffBitmap = ImageToBitmapImage(coloredImage);
+            ThrowProcessedBitmap = ImageToBitmapImage(throwProcessedImageColored);
 
             backgroundProcessedImage = throwProcessedImage.Clone();
 
@@ -339,7 +341,7 @@ namespace DiffImagesCollector
             return imageToSave;
         }
 
-        private void DrawCircle(Image<Bgr, byte> image,
+        private void DrawCircle(IInputOutputArray image,
                                 PointF centerpoint,
                                 int radius,
                                 MCvScalar color,
@@ -352,7 +354,7 @@ namespace DiffImagesCollector
                             thickness);
         }
 
-        private void DrawLine(Image<Bgr, byte> image,
+        private void DrawLine(IInputOutputArray image,
                               PointF point1,
                               PointF point2,
                               MCvScalar color,
