@@ -8,6 +8,7 @@ using System.Data.SQLite;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -200,8 +201,12 @@ namespace DiffImagesCollector
 
             for (int i = 0; i < hullContour.Size; i++)
             {
-                CvInvoke.Line(coloredImage, hullContour[i], hullContour[(i + 1) % hullContour.Size], new Bgr(Color.Blue).MCvScalar, 5);
+                CvInvoke.Line(coloredImage, hullContour[i], hullContour[(i + 1) % hullContour.Size], new Bgr(Color.Blue).MCvScalar, 2);
             }
+
+            var edgePoint = hullContour.ToArray().OrderByDescending(p => p.Y).ElementAt(0);
+
+            DrawCircle(coloredImage, edgePoint, 5, new Bgr(Color.Chartreuse).MCvScalar, 2);
 
             DiffBitmap = ImageToBitmapImage(coloredImage);
 
