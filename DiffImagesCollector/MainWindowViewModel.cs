@@ -181,15 +181,15 @@ namespace DiffImagesCollector
             throwProcessedImage = throwRawImage.Clone().Convert<Gray, byte>();
             var throwProcessedImageColored = throwRawImage.Clone().Convert<Gray, byte>().Convert<Bgr, byte>();
 
-            var greyImage = throwProcessedImage.AbsDiff(backgroundProcessedImage);
-            greyImage._ThresholdBinary(new Gray(70), new Gray(255));
-
-            var coloredImage = greyImage.Clone().Convert<Bgr, byte>();
-
             // tests
 
+            var greyDiffImage = throwProcessedImage.AbsDiff(backgroundProcessedImage);
+            greyDiffImage._SmoothGaussian(5);
+            
+            var cannyImage = greyDiffImage.Canny(0, 255);
+
             var allContours = new VectorOfVectorOfPoint();
-            CvInvoke.FindContours(greyImage, allContours, new Mat(), RetrType.External, ChainApproxMethod.ChainApproxNone);
+            CvInvoke.FindContours(cannyImage, allContours, new Mat(), RetrType.External, ChainApproxMethod.ChainApproxNone);
 
             var hullContour = new VectorOfPoint();
 
@@ -198,33 +198,34 @@ namespace DiffImagesCollector
             {
                 var tempContour = allContours[i];
                 var tempContourArс = CvInvoke.ArcLength(tempContour, false);
-                if (tempContourArс > 5)
-                {
+                // if (tempContourArс > 5)
+                // {
                     plainVectorOfPoint.Push(allContours[i]);
-                }
+                // }
             }
 
             CvInvoke.ConvexHull(plainVectorOfPoint, hullContour);
 
+            var cannyImageColorized = cannyImage.Convert<Bgr, byte>();
+
             for (var i = 0; i < hullContour.Size; i++)
             {
-                CvInvoke.Line(coloredImage, hullContour[i], hullContour[(i + 1) % hullContour.Size], new Bgr(Color.Blue).MCvScalar, 2);
+                CvInvoke.Line(cannyImageColorized, hullContour[i], hullContour[(i + 1) % hullContour.Size], new Bgr(Color.Blue).MCvScalar, 2);
             }
 
             var hullContourArray = hullContour.ToArray();
-
             var centerX = hullContourArray.Sum(x => x.X) / hullContourArray.Length;
             var centerY = hullContourArray.Sum(x => x.Y) / hullContourArray.Length;
             var centerOfMassPoint = new PointF(centerX, centerY);
-            DrawCircle(coloredImage, centerOfMassPoint, 5, new Bgr(Color.Cyan).MCvScalar, 3);
+            DrawCircle(cannyImageColorized, centerOfMassPoint, 5, new Bgr(Color.Cyan).MCvScalar, 3);
 
             var edgePoint = hullContourArray.OrderByDescending(p => p.Y).ElementAt(0);
-            DrawCircle(coloredImage, edgePoint, 3, new Bgr(Color.Red).MCvScalar, 3);
+            DrawCircle(cannyImageColorized, edgePoint, 3, new Bgr(Color.Red).MCvScalar, 3);
             DrawCircle(throwProcessedImageColored, edgePoint, 3, new Bgr(Color.Red).MCvScalar, 3);
 
             // tests
 
-            DiffBitmap = ImageToBitmapImage(coloredImage);
+            DiffBitmap = ImageToBitmapImage(cannyImageColorized);
             ThrowProcessedBitmap = ImageToBitmapImage(throwProcessedImageColored);
 
             backgroundProcessedImage = throwProcessedImage.Clone();
