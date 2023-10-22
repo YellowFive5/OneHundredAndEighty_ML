@@ -2,7 +2,7 @@ import bpy
 import uuid
 
 def render(value):
-    output_file = "L:/Synthetic/25/" + value + "_" + str(uuid.uuid4()) + ".png"
+    output_file = "Z:/Synthetic/25/" + value + "_" + str(uuid.uuid4()) + ".png"
     bpy.context.scene.render.resolution_x = 1920
     bpy.context.scene.render.resolution_y = 1080
     bpy.context.scene.render.image_settings.file_format = "PNG"
@@ -53,7 +53,7 @@ xRotatesTimes = 15
 zRotatesAng = 0.392699
 zRotatesTimes = 2
 
-moveXYClock(6, 5)
+moveXYClock(6, 3)
 moveXYClock(8)
 
 for x in movesXY:
