@@ -47,30 +47,31 @@ def rotateZ(rads, times = 1):
 
 renders = 0;
 movesXY = [12,12,12,8,6,6]
-yxRoatatesAng = -0.05236
-yRoatatesTimes = 20
-xRoatatesTimes = 15
-zRoatatesAng = 0.3927
-zRoatatesTimes = 3
+yxRotatesAng = -0.05236
+yRotatesTimes = 20
+xRotatesTimes = 15
+zRotatesAng = 0.392699
+zRotatesTimes = 2
 
 moveXYClock(6)
 moveXYClock(8)
+
 for x in movesXY:
     bpy.data.objects["Dart_2"].rotation_euler = (0,0,0)
     bpy.ops.transform.rotate(value=0.5236, orient_axis='Y')
     bpy.ops.transform.rotate(value=0.7854, orient_axis='X')
-    for zr in range(zRoatatesTimes):
-        rotateZ(zRoatatesAng)
-        for yr in range(yRoatatesTimes):
-            for xr in range(xRoatatesTimes):
+    for zr in range(zRotatesTimes):
+        for yr in range(yRotatesTimes):
+            for xr in range(xRotatesTimes):
                 render("bull")
                 renders = renders + 1
-                print(str(renders) + "/5400")
-                rotateX(yxRoatatesAng)
-            rotateX(yxRoatatesAng * xRoatatesTimes * -1)
-            rotateY(yxRoatatesAng)
-        rotateY(yxRoatatesAng * yRoatatesTimes * -1)
-    rotateZ(zRoatatesAng * zRoatatesTimes * -1)
+                print(str(renders) + "/" + str(len(movesXY) * yRotatesTimes * xRotatesTimes * zRotatesTimes))
+                rotateX(yxRotatesAng)
+            rotateX(yxRotatesAng * xRotatesTimes * -1)
+            rotateY(yxRotatesAng)
+        rotateY(yxRotatesAng * yRotatesTimes * -1)
+        rotateZ(zRotatesAng)
+    rotateZ(zRotatesAng * zRotatesTimes * -1)
     moveXYClock(x)
 
 bpy.ops.transform.rotate(value=-0.7854, orient_axis='X')
