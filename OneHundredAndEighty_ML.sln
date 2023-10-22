@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiffImagesCollector", "Diff
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BinaryLearning", "BinaryLearning\BinaryLearning.csproj", "{91AD702A-7D8C-4CE1-96B6-DBA43C54301D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlenderSyntheticDataset", "BlenderSyntheticDataset\BlenderSyntheticDataset.csproj", "{D98D2C76-6B28-4F2A-A52C-6E720471AC50}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{91AD702A-7D8C-4CE1-96B6-DBA43C54301D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91AD702A-7D8C-4CE1-96B6-DBA43C54301D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91AD702A-7D8C-4CE1-96B6-DBA43C54301D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D98D2C76-6B28-4F2A-A52C-6E720471AC50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D98D2C76-6B28-4F2A-A52C-6E720471AC50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D98D2C76-6B28-4F2A-A52C-6E720471AC50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D98D2C76-6B28-4F2A-A52C-6E720471AC50}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
