@@ -1,5 +1,8 @@
 ﻿#region Usings
 
+using System;
+using System.IO;
+using System.Threading.Tasks;
 using Emgu.CV;
 using Emgu.CV.Structure;
 
@@ -12,16 +15,32 @@ namespace RenderImagesConverter
         static void Main(string[] args)
         {
             var ip = new ImageProcessor();
-            var folder = @"Z:\SyntheticRenders\";
+            var sourceFolder = @"Z:\SyntheticData\";
+            var sourceFolderBull = @$"{sourceFolder}Renders\Bull\";
+            var sourceFolder25 = $@"{sourceFolder}Renders\25\";
+            var destFolderBull = $@"{sourceFolder}Dataset\Bull\";
+            var destFolder25 = $@"{sourceFolder}Dataset\25\";
 
-            var renderClearBackground = new Image<Bgr, byte>($"{folder}RenderClearBackground.png");
-            var nextThrowImage = new Image<Bgr, byte>($"{folder}testThrow.png");
+            var renderClearBackground = new Image<Bgr, byte>($"{sourceFolder}RenderClearBackground.png");
 
-            var warpedDiff = ip.ConvertImage(renderClearBackground, nextThrowImage);
-
-            ImageSaver.Save(warpedDiff[0], folder, "diff1");
-            ImageSaver.Save(warpedDiff[1], folder, "diff2");
-            ImageSaver.Save(warpedDiff[2], folder, "diff3");
+            var dir1 = new DirectoryInfo(sourceFolderBull);
+            var dir2 = new DirectoryInfo(sourceFolder25);
+            var files = dir2.GetFiles("*.png");
+            var filesCount = files.Length;
+            var processedCounter = 0;
+            Parallel.ForEach(files,
+                             new ParallelOptions
+                             {
+                                 MaxDegreeOfParallelism = 24
+                             },
+                             f =>
+                             {
+                                 var nextThrowImage = new Image<Bgr, byte>(f.FullName);
+                                 var warpedDiff = ip.ConvertImage(renderClearBackground, nextThrowImage);
+                                 var warpOnProjection = Drawer.DrawProjection(warpedDiff[2].Convert<Bgr, byte>());
+                                 ImageSaver.Save(warpOnProjection, destFolder25, $"{f.Name.Replace(".png", "")}");
+                                 Console.WriteLine($"{processedCounter++}/{filesCount}");
+                             });
         }
     }
 }

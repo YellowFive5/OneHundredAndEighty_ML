@@ -17,16 +17,16 @@ namespace RenderImagesConverter
                                                                                    {
                                                                                        new List<PointF>
                                                                                        {
-                                                                                           new(800, 181),
-                                                                                           new(1141, 649),
-                                                                                           new(499, 1118),
-                                                                                           new(249, 363),
+                                                                                           new(881, 196),
+                                                                                           new(1104, 881),
+                                                                                           new(419, 1104),
+                                                                                           new(196, 419),
                                                                                        },
                                                                                        new List<PointF>
                                                                                        {
                                                                                            new(839, 974),
-                                                                                           new(932, 81),
                                                                                            new(136, 330),
+                                                                                           new(932, 81),
                                                                                            new(1663, 435),
                                                                                        }
                                                                                    };
