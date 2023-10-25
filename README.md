@@ -3,11 +3,11 @@
 Detection, based on machine learning
 
 ## Contents
-* [0. Why and what](https://github.com/YellowFive5/OneHundredAndEighty_ML#why](https://github.com/YellowFive5/OneHundredAndEighty_ML/edit/main/README.md#why))
-* [1. Only one camera](https://github.com/YellowFive5/OneHundredAndEighty_ML/edit/main/README.md#1-only-one-camera)
-* [2. Some pre-calculations](https://github.com/YellowFive5/OneHundredAndEighty_ML/edit/main/README.md#2-some-pre-calculations)
-* [3. Synthetic data with blender scripting](https://github.com/YellowFive5/OneHundredAndEighty_ML/edit/main/README.md#3-synthetic-data-with-blender-scripting)
-* [4. .NET ML from box](https://github.com/YellowFive5/OneHundredAndEighty_ML/edit/main/README.md#4-net-ml-from-box)
+* [0. Why and what](https://github.com/YellowFive5/OneHundredAndEighty_ML#why)
+* [1. Only one camera](https://github.com/YellowFive5/OneHundredAndEighty_ML#1-only-one-camera)
+* [2. Some pre-calculations](https://github.com/YellowFive5/OneHundredAndEighty_ML#2-some-pre-calculations)
+* [3. Synthetic data with blender scripting](https://github.com/YellowFive5/OneHundredAndEighty_ML#3-synthetic-data-with-blender-scripting)
+* [4. .NET ML from box](https://github.com/YellowFive5/OneHundredAndEighty_ML#4-net-ml-from-box)
 * [Links and things](https://github.com/YellowFive5/OneHundredAndEighty_ML#links-and-things)
 
 ## Why?
