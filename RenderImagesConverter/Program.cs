@@ -20,17 +20,17 @@ namespace RenderImagesConverter
             var sourceFolderBull = @$"{sourceFolder}Renders\Bull\";
             var sourceFolder25 = $@"{sourceFolder}Renders\25\";
             var destFolderBull = $@"{sourceFolder}Dataset\Projection\Bull\";
-            var destFolder25 = $@"{sourceFolder}Dataset\Projection\25\";
+            var destFolder25 = $"D:\\Dataset\\TestSet\\Renders\\Projection";
             // var destFolder25 = @"D:\25\";
 
             var renderClearBackground = new Image<Bgr, byte>($"{sourceFolder}RenderClearBackground.png");
 
-            var dir1 = new DirectoryInfo(sourceFolderBull);
-            var dir2 = new DirectoryInfo(sourceFolder25);
-            var dirOut = new DirectoryInfo(destFolder25);
+            var dir1 = new DirectoryInfo("D:\\Dataset\\TestSet\\Renders");
+            // var dir2 = new DirectoryInfo(sourceFolder25);
+            var dirOut = new DirectoryInfo("D:\\Dataset\\TestSet\\Renders\\Projection");
             var readyFiles = dirOut.GetFiles("*.jpeg");
 
-            var files = dir2.GetFiles("*.png");
+            var files = dir1.GetFiles("*.png");
             var filesCount = files.Length;
 
             var processedCounter = 0;
