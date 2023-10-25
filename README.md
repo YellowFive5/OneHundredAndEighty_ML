@@ -3,13 +3,11 @@
 Detection, based on machine learning
 
 ## Contents
-* [0. Why and what](https://github.com/YellowFive5/OneHundredAndEighty_ML#why)
-* [1. Some pre-calculations](https://github.com/YellowFive5/OneHundredAndEighty_ML#1-some-pre-calculations)
-* [2. Only one camera](https://github.com/YellowFive5/OneHundredAndEighty_ML#2-only-one-camera)
-* [3. DotsMapper](https://github.com/YellowFive5/OneHundredAndEighty_ML#3-dotsmapper)
-* [4. DiffImagesCollector](https://github.com/YellowFive5/OneHundredAndEighty_ML#4-diffimagescollector)
-* [5. Collecting dataset](https://github.com/YellowFive5/OneHundredAndEighty_ML/blob/main/README.md#5-collecting-dataset)
-* [6. .NET ML from box](https://github.com/YellowFive5/OneHundredAndEighty_ML/blob/main/README.md#6-net-ml-from-box)
+* [0. Why and what](https://github.com/YellowFive5/OneHundredAndEighty_ML#why](https://github.com/YellowFive5/OneHundredAndEighty_ML/edit/main/README.md#why))
+* [1. Only one camera](https://github.com/YellowFive5/OneHundredAndEighty_ML/edit/main/README.md#1-only-one-camera)
+* [2. Some pre-calculations](https://github.com/YellowFive5/OneHundredAndEighty_ML/edit/main/README.md#2-some-pre-calculations)
+* [3. Synthetic data with blender scripting](https://github.com/YellowFive5/OneHundredAndEighty_ML/edit/main/README.md#3-synthetic-data-with-blender-scripting)
+* [4. .NET ML from box](https://github.com/YellowFive5/OneHundredAndEighty_ML/edit/main/README.md#4-net-ml-from-box)
 * [Links and things](https://github.com/YellowFive5/OneHundredAndEighty_ML#links-and-things)
 
 ## Why?
@@ -22,58 +20,48 @@ There are many people, who had stucked with camera setups to start using app. An
 
 ## Modern world needs modern solutions
 
-That's why I want to try ML. The idea is to have 1 camera with general dartboard view. In prepare-game process I need to collect many-many diff-images to create learning data set to learn neural network. Then, using this network, I will be able to get detection results.
+That's why I want to try ML. The idea is to have 1 camera with general dartboard view. Someway I need to collect a lot of images to create learning data set to learn neural network. Then, using this network, I will be able to get detection results.
 
 ![IMG](https://user-images.githubusercontent.com/42347722/114268242-d2ae8280-9a08-11eb-93a8-f24947e13dc6.jpg)
 
-I had some consultations with men who use ML on in his work and knows many about - he said it's smart idea and I must succeed with it.
+## 1. Only one camera
 
-So let's go...
+![Camera](https://github.com/YellowFive5/OneHundredAndEighty_ML/assets/42347722/ffb992f8-e117-4079-8994-4e07c464d5f3)
 
-## 1. Some pre-calculations
-![Mapping](https://user-images.githubusercontent.com/42347722/114311826-fc46d700-9af8-11eb-926e-806838f7d4d0.jpg)
+I use Logitech c920e
 
-This simplyfied map shows how many throws can be done. This is simple-minimum. On all this throws I need minimum one diff image to learn. From this calculations becomes clear, that it's a lot work ahead... too lot.
+## 2. Some pre-calculations
 
-So, it will be right to start small. I'll try to prepare minimum dataset for 25 and bulls to learn.
+![Mapping](https://github.com/YellowFive5/OneHundredAndEighty_ML/assets/42347722/5389fed4-ced1-477f-b32a-155dd7182637)
 
-## 2. Only one camera
-![IMG_2443](https://user-images.githubusercontent.com/42347722/114311813-f0f3ab80-9af8-11eb-99e9-6eacbfecab15.jpeg)
+This simplyfied image shows how many throws needs to be done and captured to have full and good quality dataset.
 
-Camera case and mount printed and set.
+It's obvious, that collecting such huge amount of data with hands is very long and difficult.
 
-## 3. DotsMapper
-Further calculation process will use synthetic 1300x1300 px drawed dartboard image and POI's with it's coordinates. To collect this coordinates for learning and mapping to diff-image for NN I use [DotsMapper](https://github.com/YellowFive5/OneHundredAndEighty_ML/tree/main/DotsMapper) And that how it goes:
+## 3. Synthetic data with blender scripting
 
-![2021-04-14 16_05_20-DotsMapper](https://user-images.githubusercontent.com/42347722/114715164-749cda80-9d3b-11eb-8573-dd5fb24479d8.png)
+![blender](https://github.com/YellowFive5/OneHundredAndEighty_ML/assets/42347722/7a4d09e9-f72d-44b7-b233-dd164a33316d)
 
-21 bull points and 108 _25 points at all.
+So I used blender and some scripts to create scene with dartboard and dart to move it in different positions and render synthetic images.
 
-All 129 points collected to local SQLite.db
+To test how all works I start with only bull and 25 sectors.
 
-## 4. DiffImagesCollector
-![2021-04-25 14_12_05-DiffImagesCollector](https://user-images.githubusercontent.com/42347722/115991400-e04f3500-a5d0-11eb-8513-81911357cad2.png)
-With [this simple util](https://github.com/YellowFive5/OneHundredAndEighty_ML/tree/main/DiffImagesCollector) I get next point from .db and it shows on projection. So I need to manually stick dart in this point and get capture. Diff images will save in filesystem and .db 
+![Renders](https://github.com/YellowFive5/OneHundredAndEighty_ML/assets/42347722/583d1715-4c58-4471-9d40-b5f4a40de37f)
 
-I plan to take some 'clear' diff-captures for each point. After that I will have small dataset to try to learn NN.
+I genereted 9k (28 Gb) images for bull sector and 53k (154 Gb) images for 25 sector. Then convered it to projection diff images for model learning
 
-## 5. Collecting dataset
-![IMG_2458](https://user-images.githubusercontent.com/42347722/116810408-506b3700-ab4c-11eb-80bb-cb4b053b9688.jpeg)
-
-![2021-05-02 13_40_08-Images](https://user-images.githubusercontent.com/42347722/116810461-94f6d280-ab4c-11eb-83ed-6a7da7f0e0a9.png)
-
-516 images (x4 for each point) collected. Now it's time to try to learn model.
-
-## 6. .NET ML from box
+## 4. .NET ML from box
 First thing, that I decided to try, was simple image classification using .NET ML libraries. I tried [this guide](https://analyticsindiamag.com/step-by-step-guide-for-image-classification-using-ml-net/)
 
-So I has 516 images, marked with 2 types of labels (Bull or 25). I wrote code to train model on images and save it. In setup parameters I found, that there are several model architectures and test fraction rate of decimal value. So I tried and saved all.
+So I has 62k images, marked with 2 types of labels (Bull or 25).
 
-Then I took 26 new images to test results of learned models predictions: 5 straight sticks in bull, 5 sticks in bull on different angle, 8 straight sticks in 25 and 5 sticks in 25 on different angle. Then I tested all this images on all models and printed right predictions count:
+I wrote code to train model on images and save it.
 
-![2021-05-04 20_47_57-_C__Program Files_JetBrains_JetBrains Rider 2021 1 1_plugins_dpa_DotFiles_JetBra](https://user-images.githubusercontent.com/42347722/117103593-4a12d000-ad83-11eb-81b5-c94700d8c48b.png)
+Then I took 20 new images (10 bulls and 10 25's) to test results of learned models predictions.
 
-6 wrong predictions in best models results is in bull on different angle.
+![resnetTests](https://github.com/YellowFive5/OneHundredAndEighty_ML/assets/42347722/623cb8a7-d9ca-4edc-9b19-1c6dd2d74484)
+
+ResnetV2101 model - 1000 Epochs - 0.05 fractions predict 100% 😎
 
 So, raw results says, that idea of ML works overall, but we need more training dataset at first and more deep understanding of ML techniques and tips/tricks.
 
@@ -81,8 +69,5 @@ So, raw results says, that idea of ML works overall, but we need more training d
 
 ## Links and things
 * [Led ring origin model](https://www.thingiverse.com/thing:4753272?fbclid=IwAR1P2s8mtMV7xil93jrYmAPycB94fgMHyx9JStwKNHWg2jZmfU5ge5BDYVE)
-* [My led ring model rework](https://github.com/YellowFive5/OneHundredAndEighty_ML/files/7229550/DartsLights.zip)
-* [Camera holder origin model](https://www.thingiverse.com/thing:3114849?fbclid=IwAR1u1xJo8D-zzpK3FHEcCSob7IPIFh-mR_QWvMnZrBq3IIHZELM-ICNgpGE)
-* [My camera holder rework](https://github.com/YellowFive5/OneHundredAndEighty_ML/files/7229554/CamCaseHolder.zip)
 
 P.S. - If you like this stuff and if you want you can donate me for some beer 🍻 (click 💜"Sponsor" button in the top of a page)
