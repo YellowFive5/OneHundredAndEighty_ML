@@ -17,82 +17,54 @@ namespace BinaryLearning
     {
         static void Main(string[] args)
         {
-            // var arch = ImageClassificationTrainer.Architecture.ResnetV2101;
-            var epochs = 1000;
-            // var testFraction = 0.3d;
+            // TrainAndSaveModels();
 
-            var projectDir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../"));
-            var dataSetDir = Path.GetFullPath(Path.Combine(projectDir, "../../DataSet/Сlear_bull_25_x4/TrainingImages"));
-            var imagesData = LoadImagesFromDirectory(dataSetDir);
-            var modelsFolder = Path.Combine(projectDir, "../../DataSet/Сlear_bull_25_x4/TrainedModels");
-            var testImagesFolder = Path.Combine(dataSetDir, "../TestImages");
-
-            // train and save all models
-            // List<ImageClassificationTrainer.Architecture> architectures = new List<ImageClassificationTrainer.Architecture>
-            //                                                               {
-            //                                                                   ImageClassificationTrainer.Architecture.ResnetV2101,
-            //                                                                   ImageClassificationTrainer.Architecture.ResnetV250,
-            //                                                                   ImageClassificationTrainer.Architecture.MobilenetV2,
-            //                                                                   ImageClassificationTrainer.Architecture.InceptionV3
-            //                                                               };
-            // List<double> testFractions = new List<double>
-            //                              {
-            //                                  0.01,
-            //                                  0.05,
-            //                                  0.1,
-            //                                  0.15,
-            //                                  0.2,
-            //                                  0.25,
-            //                                  0.3,
-            //                                  0.35
-            //                              };
-            //
-            // foreach (var architecture in architectures)
-            // {
-            //     foreach (var fraction in testFractions)
-            //     {
-            //         MLContext mlContext = new MLContext();
-            //         IDataView imgData = mlContext.Data.LoadFromEnumerable(imagesData);
-            //         var modelName = $"{architecture}_e_{epochs}_{fraction}.zip";
-            //         var model = TrainModel(mlContext, imgData, dataSetDir, architecture, epochs, fraction);
-            //         mlContext.Model.Save(model, imgData.Schema, Path.Combine(modelsFolder, modelName));
-            //     }
-            // }
-            
-            
-            // load and test all models
-            var results = new ConcurrentBag<(string, int)>();
-            var tasks = new List<Task>();
-            foreach (var modelPath in Directory.GetFiles(modelsFolder, "*", SearchOption.AllDirectories)
-                                               .ToArray())
-            {
-                tasks.Add(Task.Run(() =>
-                                   {
-                                       MLContext mlContext = new MLContext();
-                                       var model = mlContext.Model.Load(modelPath, out var modelSchema);
-                                       ClassifyImagesFromFolder(mlContext, model, Path.Combine(projectDir, testImagesFolder), modelPath, results);
-                                   })
-                         );
-            }
-
-            Task.WaitAll(tasks.ToArray());
-            foreach (var result in results.OrderByDescending(i => i.Item2))
-            {
-                Console.WriteLine($"{result.Item1} - {result.Item2}/26");
-            }
-
-            //save one
-            // var modelName = $"{arch}_e_{epochs}_{testFraction}.zip";
-            // var model = TrainModel(mlContext, imgData, dataSetDir, arch, epochs, testFraction);
-            // mlContext.Model.Save(model, imgData.Schema, Path.Combine(modelsFolder, modelName));
-
-            //load and test one
-            //var modelName = $"{arch}_e_{epochs}_{testFraction}.zip";
-            // var model = mlContext.Model.Load(Path.Combine(modelsFolder, modelName), out var modelSchema);
-            // ClassifyImagesFromFolder(mlContext, model, Path.Combine(projectDir, testImagesFolder));
+            LoadAndTestModels();
 
             Console.WriteLine("Hello ML!");
             Console.ReadKey();
+        }
+
+        private static void TrainAndSaveModels()
+        {
+            var epochs = 1000;
+            var baseDir = @"D:\Dataset\";
+            var dataSetDir = @$"{baseDir}Projection\";
+            var imagesData = LoadImagesFromDirectory(dataSetDir).ToList();
+
+            List<ImageClassificationTrainer.Architecture> architectures = new List<ImageClassificationTrainer.Architecture>
+                                                                          {
+                                                                              ImageClassificationTrainer.Architecture.ResnetV2101,
+                                                                              // ImageClassificationTrainer.Architecture.ResnetV250,
+                                                                              // ImageClassificationTrainer.Architecture.MobilenetV2,
+                                                                              // ImageClassificationTrainer.Architecture.InceptionV3
+                                                                          };
+            List<double> testFractions = new List<double>
+                                         {
+                                             // 0.01,
+                                             0.05,
+                                             // 0.1,
+                                             // 0.15,
+                                             // 0.2,
+                                             // 0.25,
+                                             // 0.3,
+                                             // 0.35
+                                         };
+
+            foreach (var architecture in architectures)
+            {
+                foreach (var fraction in testFractions)
+                {
+                    Task.Factory.StartNew(() =>
+                                          {
+                                              MLContext mlContext = new MLContext();
+                                              IDataView imgData = mlContext.Data.LoadFromEnumerable(imagesData);
+                                              var modelName = $"{architecture}_e_{epochs}_f_{fraction}.zip";
+                                              var model = TrainModel(mlContext, imgData, dataSetDir, architecture, epochs, fraction);
+                                              mlContext.Model.Save(model, imgData.Schema, Path.Combine(baseDir, modelName));
+                                          });
+                }
+            }
         }
 
         private static ITransformer TrainModel(MLContext mlContext, IDataView dataView, string dataSetDir, ImageClassificationTrainer.Architecture architecture, int epochs, double testFraction)
@@ -135,18 +107,42 @@ namespace BinaryLearning
             foreach (var file in Directory.GetFiles(folder, "*", SearchOption.AllDirectories)
                                           .Where(f => Path.GetExtension(f) == ".jpeg"))
             {
-                var splitted = Path.GetFileName(file)
-                                   .Split(new[] {'_'})
-                                   .Where(w => w != string.Empty)
-                                   .ToArray();
+                var nameSplits = Path.GetFileName(file).Split("_");
 
                 yield return new ImgData
                              {
                                  ImgPath = file,
-                                 Label = splitted[1]
+                                 Label = nameSplits[0]
                              };
             }
         }
+
+        private static void LoadAndTestModels()
+        {
+            var modelsFolder = @"D:\Dataset\Models\";
+            var testImagesFolder = @"D:\Dataset\TestSet\Renders\Projection\";
+
+            var results = new ConcurrentBag<(string, int)>();
+            var tasks = new List<Task>();
+            foreach (var modelPath in Directory.GetFiles(modelsFolder, "*.zip", SearchOption.AllDirectories)
+                                               .ToArray())
+            {
+                tasks.Add(Task.Run(() =>
+                                   {
+                                       MLContext mlContext = new MLContext();
+                                       var model = mlContext.Model.Load(modelPath, out var modelSchema);
+                                       ClassifyImagesFromFolder(mlContext, model, testImagesFolder, modelPath, results);
+                                   })
+                         );
+            }
+
+            Task.WaitAll(tasks.ToArray());
+            foreach (var result in results.OrderByDescending(i => i.Item2))
+            {
+                Console.WriteLine($"{result.Item1} - {result.Item2}/20");
+            }
+        }
+
 
         private static void ClassifyImagesFromFolder(MLContext myContext, ITransformer trainedModel, string imagesFolderPath, string modelPath, ConcurrentBag<(string, int)> mainResults)
         {
@@ -159,10 +155,7 @@ namespace BinaryLearning
 
             foreach (var imageFile in imageFiles)
             {
-                var splitted = Path.GetFileName(imageFile)
-                                   .Split(new[] {'_'})
-                                   .Where(w => w != string.Empty)
-                                   .ToArray();
+                var splitted = Path.GetFileName(imageFile).Split("_");
 
                 InputData image = new InputData
                                   {
@@ -177,7 +170,7 @@ namespace BinaryLearning
 
                 results.Add((image.Label, prediction.PredictedLabel));
 
-                // OutputPred(prediction);
+                OutputPred(prediction);
             }
 
             mainResults.Add((modelName, results.Count(r => r.Item1 == r.Item2)));
