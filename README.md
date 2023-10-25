@@ -40,9 +40,13 @@ It's obvious, that collecting such huge amount of data with hands is very long a
 
 ## 3. Synthetic data with blender scripting
 
+I created blender scene with dartboard and camera position similar to my camera
+
+![CameraScene jpeg](https://github.com/YellowFive5/OneHundredAndEighty_ML/assets/42347722/f54bec9a-c1b1-4902-a7e6-946f61ffe6b1)
+
 ![blender](https://github.com/YellowFive5/OneHundredAndEighty_ML/assets/42347722/7a4d09e9-f72d-44b7-b233-dd164a33316d)
 
-So I used blender and some scripts to create scene with dartboard and dart to move it in different positions and render synthetic images.
+I wrote some scripts to move dart it in different positions and render synthetic images.
 
 To test how all works I start with only bull and 25 sectors.
 
