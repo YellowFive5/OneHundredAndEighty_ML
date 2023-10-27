@@ -16,21 +16,23 @@ namespace RenderImagesConverter
         static void Main(string[] args)
         {
             var ip = new ImageProcessor();
-            var sourceFolder = @"Z:\SyntheticData\";
-            var sourceFolderBull = @$"{sourceFolder}Renders\Bull\";
-            var sourceFolder25 = $@"{sourceFolder}Renders\25\";
-            var destFolderBull = $@"{sourceFolder}Dataset\Projection\Bull\";
-            var destFolder25 = $"D:\\Dataset\\TestSet\\Renders\\Projection";
-            // var destFolder25 = @"D:\25\";
 
-            var renderClearBackground = new Image<Bgr, byte>($"{sourceFolder}RenderClearBackground.png");
+            // var sourceFolder = @$"Z:\SyntheticData\Renders\Bull\";
+            // var sourceFolder = $@"Z:\SyntheticData\Renders\25\";
+            var sourceFolder = @"D:\Dataset\TestSet\Cam";
 
-            var dir1 = new DirectoryInfo("D:\\Dataset\\TestSet\\Renders");
-            // var dir2 = new DirectoryInfo(sourceFolder25);
-            var dirOut = new DirectoryInfo("D:\\Dataset\\TestSet\\Renders\\Projection");
-            var readyFiles = dirOut.GetFiles("*.jpeg");
+            // var destFolder = $@"D:\\Dataset\\Projection\Bull\";
+            // var destFolder = $"D:\\Dataset\\TestSet\\Cam\\Projection";
+            // var destFolder = @"D:\25\";
+            var destFolder = @"D:\Dataset\TestSet\Cam\Projection";
 
-            var files = dir1.GetFiles("*.png");
+            var renderClearBackground = new Image<Bgr, byte>(@"D:\Dataset\TestSet\Cam\Projection\CamClearBackground.jpg");
+
+            var dir = new DirectoryInfo(sourceFolder);
+            var readyFiles = new DirectoryInfo(destFolder).GetFiles("*.jpeg");
+
+            // var files = dir.GetFiles("*.png");
+            var files = dir.GetFiles("*.jpg");
             var filesCount = files.Length;
 
             var processedCounter = 0;
@@ -50,7 +52,8 @@ namespace RenderImagesConverter
                                  var nextThrowImage = new Image<Bgr, byte>(f.FullName);
                                  var warpedDiff = ip.ConvertImage(renderClearBackground, nextThrowImage);
                                  var warpOnProjection = Drawer.DrawProjection(warpedDiff[2].Convert<Bgr, byte>());
-                                 ImageSaver.Save(warpOnProjection, destFolder25, $"{f.Name.Replace(".png", "")}");
+                                 // ImageSaver.Save(warpOnProjection, destFolder, $"{f.Name.Replace(".png", "")}");
+                                 ImageSaver.Save(warpOnProjection, destFolder, $"{f.Name.Replace(".jpg", "")}");
                                  Console.WriteLine($"{processedCounter++}/{filesCount}");
                              });
         }

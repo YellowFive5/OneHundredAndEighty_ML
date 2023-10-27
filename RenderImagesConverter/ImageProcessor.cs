@@ -15,19 +15,28 @@ namespace RenderImagesConverter
     {
         private static readonly List<List<PointF>> ProjectionToImgWarpsKeyPoints = new()
                                                                                    {
-                                                                                       new List<PointF>
+                                                                                       new List<PointF> // projection
                                                                                        {
                                                                                            new(881, 196),
                                                                                            new(1104, 881),
                                                                                            new(419, 1104),
                                                                                            new(196, 419),
-                                                                                       },
-                                                                                       new List<PointF>
+                                                                                       }
+                                                                                       ,
+                                                                                       // new List<PointF> // blenderCam
+                                                                                       // {
+                                                                                       //     new(839, 974),
+                                                                                       //     new(136, 330),
+                                                                                       //     new(932, 81),
+                                                                                       //     new(1663, 435),
+                                                                                       // }
+                                                                                       // ,
+                                                                                       new List<PointF> // live cam
                                                                                        {
-                                                                                           new(839, 974),
-                                                                                           new(136, 330),
-                                                                                           new(932, 81),
-                                                                                           new(1663, 435),
+                                                                                           new(925, 1016),
+                                                                                           new(216, 272),
+                                                                                           new(985, 52),
+                                                                                           new(1697, 412),
                                                                                        }
                                                                                    };
 
