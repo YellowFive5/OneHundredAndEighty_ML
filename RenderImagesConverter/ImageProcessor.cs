@@ -6,6 +6,7 @@ using System.Linq;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
+using Emgu.CV.Util;
 
 #endregion
 
@@ -23,21 +24,21 @@ namespace RenderImagesConverter
                                                                                            new(196, 419),
                                                                                        }
                                                                                        ,
-                                                                                       // new List<PointF> // blenderCam
-                                                                                       // {
-                                                                                       //     new(839, 974),
-                                                                                       //     new(136, 330),
-                                                                                       //     new(932, 81),
-                                                                                       //     new(1663, 435),
-                                                                                       // }
-                                                                                       // ,
-                                                                                       new List<PointF> // live cam
+                                                                                       new List<PointF> // blenderCam
                                                                                        {
-                                                                                           new(925, 1016),
-                                                                                           new(216, 272),
-                                                                                           new(985, 52),
-                                                                                           new(1697, 412),
+                                                                                           new(839, 974),
+                                                                                           new(136, 330),
+                                                                                           new(932, 81),
+                                                                                           new(1663, 435),
                                                                                        }
+                                                                                        ,
+                                                                                       // new List<PointF> // live cam
+                                                                                       // {
+                                                                                       //     new(925, 1016),
+                                                                                       //     new(216, 272),
+                                                                                       //     new(985, 52),
+                                                                                       //     new(1697, 412),
+                                                                                       // }
                                                                                    };
 
         private readonly int[] bilateralSetups = { 11, 41, 21 };
@@ -58,7 +59,23 @@ namespace RenderImagesConverter
             var warpMat = CvInvoke.GetPerspectiveTransform(ProjectionToImgWarpsKeyPoints.Last().ToArray(), ProjectionToImgWarpsKeyPoints.First().ToArray());
             var warpedImage = new Image<Gray, byte>(Drawer.ProjectionFrameSide, Drawer.ProjectionFrameSide);
             CvInvoke.WarpPerspective(cannyImage, warpedImage, warpMat, warpedImage.Size, Inter.Linear, Warp.Default, BorderType.Constant, new MCvScalar(0));
-            images.Add(warpedImage);
+            
+            //contours filter
+            var numberToFiltrate = 3;
+            var filtratedContoursImage = new Image<Gray, byte>(warpedImage.Width, warpedImage.Height);
+            var allContours = Measurer.FindContours(warpedImage);
+            var tooNoisy = Measurer.FindNumberOfContours(allContours) >= numberToFiltrate;
+            var filtrated = tooNoisy
+                                ? Measurer.FindBiggestContoursByArea(allContours, numberToFiltrate)
+                                : allContours;
+            filtrated = new VectorOfVectorOfPoint(filtrated.ToArrayOfArray()
+                                                           .Where(cp => Measurer.FindContourArea(Measurer.PArrToVoVoP(cp)) > 20)
+                                                           .ToArray());
+            
+            Drawer.DrawContour(filtratedContoursImage, filtrated, new Bgr(Color.White).MCvScalar);
+            images.Add(filtratedContoursImage);
+            
+            // images.Add(warpedImage);
 
             return images;
         }

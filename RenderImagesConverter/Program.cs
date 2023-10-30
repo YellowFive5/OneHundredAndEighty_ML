@@ -1,10 +1,13 @@
 ﻿#region Usings
 
 using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Emgu.CV;
+using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 
 #endregion
@@ -17,22 +20,22 @@ namespace RenderImagesConverter
         {
             var ip = new ImageProcessor();
 
-            // var sourceFolder = @$"Z:\SyntheticData\Renders\Bull\";
-            // var sourceFolder = $@"Z:\SyntheticData\Renders\25\";
-            var sourceFolder = @"D:\Dataset\TestSet\Cam";
+            var sourceFolder = @$"E:\SyntheticData\Renders\Bull\";
+            // var sourceFolder = $@"E:\SyntheticData\Renders\25\";
+            // var sourceFolder = @"D:\Dataset\TestSet\Cam";
 
-            // var destFolder = $@"D:\\Dataset\\Projection\Bull\";
-            // var destFolder = $"D:\\Dataset\\TestSet\\Cam\\Projection";
+            var destFolder = $@"D:\Dataset\LearnSet\224Clear\Bull\";
+            // var destFolder = $"D:\Dataset\LearnSet\224Clear\25\";
             // var destFolder = @"D:\25\";
-            var destFolder = @"D:\Dataset\TestSet\Cam\Projection";
+            // var destFolder = @"D:\Dataset\TestSet\Cam\Projection";
 
-            var renderClearBackground = new Image<Bgr, byte>(@"D:\Dataset\TestSet\Cam\Projection\CamClearBackground.jpg");
+            var renderClearBackground = new Image<Bgr, byte>(@"D:\Dataset\TestSet\RenderClearBackground.png");
 
             var dir = new DirectoryInfo(sourceFolder);
             var readyFiles = new DirectoryInfo(destFolder).GetFiles("*.jpeg");
 
-            // var files = dir.GetFiles("*.png");
-            var files = dir.GetFiles("*.jpg");
+            var files = dir.GetFiles("*.png");
+            // var files = dir.GetFiles("*.jpg");
             var filesCount = files.Length;
 
             var processedCounter = 0;
@@ -51,9 +54,27 @@ namespace RenderImagesConverter
 
                                  var nextThrowImage = new Image<Bgr, byte>(f.FullName);
                                  var warpedDiff = ip.ConvertImage(renderClearBackground, nextThrowImage);
-                                 var warpOnProjection = Drawer.DrawProjection(warpedDiff[2].Convert<Bgr, byte>());
-                                 // ImageSaver.Save(warpOnProjection, destFolder, $"{f.Name.Replace(".png", "")}");
-                                 ImageSaver.Save(warpOnProjection, destFolder, $"{f.Name.Replace(".jpg", "")}");
+                                 // var warpOnProjection = Drawer.DrawProjection(warpedDiff[2].Convert<Bgr, byte>());
+                                 
+                                 var warpMat = CvInvoke.GetPerspectiveTransform(new List<PointF>
+                                                                                {
+                                                                                    new(0, 0),
+                                                                                    new(0, 1300),
+                                                                                    new(1300, 1300),
+                                                                                    new(1300, 0),
+                                                                                }.ToArray(),
+                                                                                new List<PointF> // live cam
+                                                                                {
+                                                                                    new(0, 0),
+                                                                                    new(0, 224),
+                                                                                    new(224, 224),
+                                                                                    new(224, 0),
+                                                                                }.ToArray());
+                                 var tinnyImage = new Image<Gray, byte>(224, 224);
+                                 CvInvoke.WarpPerspective(warpedDiff[2], tinnyImage, warpMat, tinnyImage.Size, Inter.Linear, Warp.Default, BorderType.Constant, new MCvScalar(0));
+                                 
+                                 ImageSaver.Save(tinnyImage, destFolder, $"{f.Name.Replace(".png", "")}");
+                                 // ImageSaver.Save(warpOnProjection, destFolder, $"{f.Name.Replace(".jpg", "")}");
                                  Console.WriteLine($"{processedCounter++}/{filesCount}");
                              });
         }
