@@ -8,7 +8,7 @@ Detection, based on machine learning
 * [2. Some pre-calculations](https://github.com/YellowFive5/OneHundredAndEighty_ML#2-some-pre-calculations)
 * [3. Synthetic data with blender scripting](https://github.com/YellowFive5/OneHundredAndEighty_ML#3-synthetic-data-with-blender-scripting)
 * [4. .NET ML from box](https://github.com/YellowFive5/OneHundredAndEighty_ML#4-net-ml-from-box)
-* [5. First results](https://github.com/YellowFive5/OneHundredAndEighty_ML#4-first-results)
+* [5. First results](https://github.com/YellowFive5/OneHundredAndEighty_ML#5-first-results)
 * [Links and things](https://github.com/YellowFive5/OneHundredAndEighty_ML#links-and-things)
 
 ## Why?
@@ -75,7 +75,10 @@ So, raw results says, that idea of ML works overall, but we need more training d
 Further tests show that everything is not so beautiful and simple (
 
 I took 20 new images from camera (10 bulls and 10 25's) as test images for model. I hoped that model learned on synthetic data will be same accuracy for real images, but unfortnatelly, best results I get is:
-ResnetV2101 model - 1000 Epochs - 0.05 fractions predict 14/20 on real images. Almost every error on bulls. I think, images from real cam has many more noise that renders and that is a problem.
+
+ResnetV2101 model - 1000 Epochs - 0.05 fractions predict 14/20 on real images. 
+
+Almost every error on bulls. I think, images from real cam has many more noise that renders and that is a problem.
 
 ...to be continued...
 
